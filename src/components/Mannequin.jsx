@@ -5,11 +5,10 @@ function Mannequin({ baseSrc, outfit }) {
     dress: { top: '35%', width: '52%', z: 3 },
     outer: { top: '24%', width: '52%', z: 4 },
     shoes: { top: '82%', width: '30%', z: 2 },
-    earrings: { top: '10%', width: '12%', z: 5 },
     accessory: { top: '30%', width: '20%', z: 5 },
   }
 
-  const layers = ['dress', 'top', 'bottom', 'outer', 'shoes', 'earrings', 'accessory']
+  const layers = ['dress', 'top', 'bottom', 'outer', 'shoes', 'accessory']
 
   return (
     <div style={{ maxWidth: '360px', margin: '0 auto' }}>

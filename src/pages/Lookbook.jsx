@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
 
 function Lookbook() {
@@ -8,14 +8,8 @@ function Lookbook() {
         <h2>Ma tenue</h2>
         <div className="lookbook">
           <img src="/images/base.png" className="base" alt="Mannequin" />
-          <img src="/images/tops/top1.png" className="clothes top" alt="Haut" />
-          <img src="/images/bottoms/bottom1.png" className="clothes bottom" alt="Bas" />
-          <img src="/images/earrings/earrings1.png" className="clothes earrings" alt="Boucles d'oreilles" />
 
           <div className="arrows-group">
-            <button className="arrow earrings left" type="button">← Boucles</button>
-            <button className="arrow earrings right" type="button">→ Boucles</button>
-
             <button className="arrow top left" type="button">← Haut</button>
             <button className="arrow top right" type="button">→ Haut</button>
 
@@ -28,6 +22,7 @@ function Lookbook() {
             </div>
           </div>
         </div>
+        <p className="muted">Aucun vêtement n'est chargé par défaut.</p>
       </div>
 
       <div className="panel" style={{ marginTop: '12px' }}>

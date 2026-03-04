@@ -1,4 +1,4 @@
-﻿import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
@@ -7,7 +7,8 @@ const navLinks = [
   { to: "/dressing", label: "Dressing" },
   { to: "/tenues", label: "Tenues" },
   { to: "/mes-tenues", label: "Mes tenues" },
-  { to: "/machine", label: "Machine à laver" },
+  { to: "/tri", label: "Tri" },
+  { to: "/machine", label: "Laverie" },
   { to: "/stats", label: "Statistiques" },
   { to: "/calendrier", label: "Calendrier" },
 ];
@@ -24,29 +25,40 @@ function Layout({ title, children }) {
 
   return (
     <>
-      <header style={{ display: "flex", justifyContent: "space-between", padding: "10px 20px", borderBottom: "1px solid #ddd" }}>
-        <h2>
-          <Link to="/" style={{ textDecoration: "none", color: "black" }}>
-            {title}
-          </Link>
-        </h2>
+      <header className="site-header">
+        <div className="container header-inner">
+          <div className="site-brand">
+            <div className="site-eyebrow">Organisation dressing</div>
+            <h1 className="site-title">
+              <Link to="/">{title}</Link>
+            </h1>
+          </div>
 
-        <nav style={{ display: "flex", gap: "10px" }}>
-          {navLinks.map((link) => (
-            <NavLink key={link.to} to={link.to}>
-              {link.label}
-            </NavLink>
-          ))}
+          <div className="site-actions">
+            <nav className="site-nav" aria-label="Navigation principale">
+              {navLinks.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={({ isActive }) => `btn small nav-pill${isActive ? " active" : ""}`}
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </nav>
 
-          {token && (
-            <button onClick={handleLogout}>
-              Déconnexion
-            </button>
-          )}
-        </nav>
+            {token ? (
+              <button className="btn small ghost" type="button" onClick={handleLogout}>
+                Deconnexion
+              </button>
+            ) : null}
+          </div>
+        </div>
       </header>
 
-      <main style={{ padding: "20px" }}>{children}</main>
+      <main>
+        <div className="container page-shell">{children}</div>
+      </main>
     </>
   );
 }

@@ -1,8 +1,10 @@
 ﻿import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import Accueil from "./pages/Accueil";
 import Dressing from "./pages/Dressing";
+import VetementDetail from "./pages/VetementDetail";
 import Tenues from "./pages/Tenues";
 import MesTenues from "./pages/MesTenues";
+import Tri from "./pages/Tri";
 import Machine from "./pages/Machine";
 import Stats from "./pages/Stats";
 import Calendrier from "./pages/Calendrier";
@@ -41,6 +43,14 @@ function App() {
           }
         />
         <Route
+          path="/dressing/:id"
+          element={
+            <PrivateRoute>
+              <VetementDetail />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/tenues"
           element={
             <PrivateRoute>
@@ -53,6 +63,14 @@ function App() {
           element={
             <PrivateRoute>
               <MesTenues />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/tri"
+          element={
+            <PrivateRoute>
+              <Tri />
             </PrivateRoute>
           }
         />
