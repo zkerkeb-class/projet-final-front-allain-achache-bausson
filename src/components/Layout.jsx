@@ -8,7 +8,6 @@ const navLinks = [
   { to: "/tenues", label: "Tenues" },
   { to: "/mes-tenues", label: "Mes tenues" },
   { to: "/tri", label: "Tri" },
-  { to: "/machine", label: "Laverie" },
   { to: "/stats", label: "Statistiques" },
   { to: "/calendrier", label: "Calendrier" },
 ];

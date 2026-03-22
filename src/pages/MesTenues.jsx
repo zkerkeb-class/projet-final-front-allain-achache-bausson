@@ -1,7 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
-import { buildApiUrl } from '../config/api'
+import { apiFetch, readApiError } from '../config/api'
 import OutfitCanvasPreview from '../components/OutfitCanvasPreview'
 import { useToast } from '../context/ToastContext'
 import PaginationControls from '../components/PaginationControls'
@@ -52,13 +52,10 @@ function MesTenues() {
       setError('')
 
       try {
-        const res = await fetch(buildApiUrl('/api/outfits'), {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const res = await apiFetch('/api/outfits')
 
         if (!res.ok) {
-          const data = await res.json().catch(() => ({}))
-          throw new Error(data.details || data.error || data.message || 'Erreur chargement tenues')
+          throw new Error(await readApiError(res, 'Erreur chargement tenues'))
         }
 
         const data = await res.json()
@@ -85,14 +82,12 @@ function MesTenues() {
     setError('')
 
     try {
-      const res = await fetch(buildApiUrl(`/api/outfits/${outfit._id}`), {
+      const res = await apiFetch(`/api/outfits/${outfit._id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur suppression tenue')
+        throw new Error(await readApiError(res, 'Erreur suppression tenue'))
       }
 
       setOutfits((prev) => prev.filter((entry) => entry._id !== outfit._id))
@@ -113,18 +108,16 @@ function MesTenues() {
     setError('')
 
     try {
-      const res = await fetch(buildApiUrl(`/api/outfits/${outfit._id}/wear`), {
+      const res = await apiFetch(`/api/outfits/${outfit._id}/wear`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({}),
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur mise a jour tenue')
+        throw new Error(await readApiError(res, 'Erreur mise a jour tenue'))
       }
 
       const data = await res.json()
@@ -137,7 +130,7 @@ function MesTenues() {
             }
           : entry
       )))
-      toast.success(`${data.updatedGarments || 0} vetement(s) envoyes dans Laverie.`)
+      toast.success(`${data.updatedGarments || 0} vetement(s) mis a jour.`)
     } catch (err) {
       setError(err.message || 'Erreur mise a jour tenue')
       toast.error(err.message || 'Erreur mise a jour tenue')
@@ -154,18 +147,16 @@ function MesTenues() {
     setError('')
 
     try {
-      const res = await fetch(buildApiUrl(`/api/outfits/${outfit._id}`), {
+      const res = await apiFetch(`/api/outfits/${outfit._id}`, {
         method: 'PATCH',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updates),
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur mise a jour tenue')
+        throw new Error(await readApiError(res, 'Erreur mise a jour tenue'))
       }
 
       const saved = await res.json()

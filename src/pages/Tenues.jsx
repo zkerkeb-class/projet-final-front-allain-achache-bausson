@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
-import { buildApiUrl, buildAssetUrl } from '../config/api'
+import { apiFetch, buildAssetUrl, readApiError } from '../config/api'
 import OutfitCanvasPreview from '../components/OutfitCanvasPreview'
 import { useToast } from '../context/ToastContext'
 
@@ -34,11 +34,6 @@ const labels = {
   shoes: 'Chaussures',
   accessory: 'Accessoire',
 }
-
-const laundryOptions = [
-  { value: 'clean', label: 'Propre' },
-  { value: 'dirty', label: 'Sale' },
-]
 
 const outfitStatusOptions = [
   { value: 'active', label: 'Active' },
@@ -98,7 +93,6 @@ function Tenues() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false)
   const [selectedColors, setSelectedColors] = useState([])
   const [selectedOccasions, setSelectedOccasions] = useState([])
-  const [selectedLaundryStatuses, setSelectedLaundryStatuses] = useState([])
   const [selectedSeasons, setSelectedSeasons] = useState([])
   const [selectedWeatherTags, setSelectedWeatherTags] = useState([])
   const [selection, setSelection] = useState({})
@@ -125,22 +119,16 @@ function Tenues() {
 
       try {
         const [garmentsRes, outfitsRes] = await Promise.all([
-          fetch(buildApiUrl('/api/garments'), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(buildApiUrl('/api/outfits'), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          apiFetch('/api/garments'),
+          apiFetch('/api/outfits'),
         ])
 
         if (!garmentsRes.ok) {
-          const data = await garmentsRes.json().catch(() => ({}))
-          throw new Error(data.message || data.error || 'Erreur chargement tenues')
+          throw new Error(await readApiError(garmentsRes, 'Erreur chargement tenues'))
         }
 
         if (!outfitsRes.ok) {
-          const data = await outfitsRes.json().catch(() => ({}))
-          throw new Error(data.details || data.error || data.message || 'Erreur chargement tenues')
+          throw new Error(await readApiError(outfitsRes, 'Erreur chargement tenues'))
         }
 
         const garments = await garmentsRes.json()
@@ -231,7 +219,6 @@ function Tenues() {
 
     setSelectedColors([])
     setSelectedOccasions([])
-    setSelectedLaundryStatuses([])
     setSelectedSeasons([])
     setSelectedWeatherTags([])
     setSelection(nextSelection)
@@ -276,7 +263,6 @@ function Tenues() {
 
     setSelectedColors([])
     setSelectedOccasions([])
-    setSelectedLaundryStatuses([])
     setSelectedSeasons([])
     setSelectedWeatherTags([])
     setSelection(nextSelection)
@@ -302,11 +288,9 @@ function Tenues() {
       const seasonOk = !selectedSeasons.length || seasons.some((value) => selectedSeasons.includes(value))
       const weatherTags = Array.isArray(item.weatherTags) ? item.weatherTags : []
       const weatherOk = !selectedWeatherTags.length || weatherTags.some((value) => selectedWeatherTags.includes(value))
-      const laundryStatus = item.laundryStatus || 'clean'
-      const laundryOk = !selectedLaundryStatuses.length || selectedLaundryStatuses.includes(laundryStatus)
-      return colorOk && occasionOk && seasonOk && weatherOk && laundryOk
+      return colorOk && occasionOk && seasonOk && weatherOk
     })
-  }, [items, selectedColors, selectedOccasions, selectedLaundryStatuses, selectedSeasons, selectedWeatherTags])
+  }, [items, selectedColors, selectedOccasions, selectedSeasons, selectedWeatherTags])
 
   const groupedItems = useMemo(() => {
     return categories.reduce((acc, category) => {
@@ -378,7 +362,6 @@ function Tenues() {
   const mobileComposerFilterCount = [
     selectedColors.length,
     selectedOccasions.length,
-    selectedLaundryStatuses.length,
     selectedSeasons.length,
     selectedWeatherTags.length,
   ].reduce((sum, value) => sum + value, 0)
@@ -548,7 +531,6 @@ function Tenues() {
   const resetFilters = () => {
     setSelectedColors([])
     setSelectedOccasions([])
-    setSelectedLaundryStatuses([])
     setSelectedSeasons([])
     setSelectedWeatherTags([])
   }
@@ -749,10 +731,9 @@ function Tenues() {
 
     try {
       const isEditing = Boolean(editingOutfitId)
-      const res = await fetch(buildApiUrl(isEditing ? `/api/outfits/${editingOutfitId}` : '/api/outfits'), {
+      const res = await apiFetch(isEditing ? `/api/outfits/${editingOutfitId}` : '/api/outfits', {
         method: isEditing ? 'PUT' : 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -764,8 +745,7 @@ function Tenues() {
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur enregistrement tenue')
+        throw new Error(await readApiError(res, 'Erreur enregistrement tenue'))
       }
 
       const saved = await res.json()
@@ -820,7 +800,6 @@ function Tenues() {
         {renderFilterDropdown('Couleurs', availableColors, selectedColors, setSelectedColors)}
         {renderFilterDropdown('Saisons', availableSeasons, selectedSeasons, setSelectedSeasons)}
         {renderFilterDropdown('Meteo', availableWeatherTags, selectedWeatherTags, setSelectedWeatherTags)}
-        {renderFilterDropdown('Etat', laundryOptions, selectedLaundryStatuses, setSelectedLaundryStatuses)}
       </div>
 
       <div className="row">
@@ -1071,18 +1050,6 @@ function Tenues() {
                     <label className="chip" key={value}>
                       <input type="checkbox" checked={selectedWeatherTags.includes(value)} onChange={() => toggleInList(value, selectedWeatherTags, setSelectedWeatherTags)} />
                       {value}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="field">
-                <label>Etat</label>
-                <div className="chips">
-                  {laundryOptions.map((option) => (
-                    <label className="chip" key={option.value}>
-                      <input type="checkbox" checked={selectedLaundryStatuses.includes(option.value)} onChange={() => toggleInList(option.value, selectedLaundryStatuses, setSelectedLaundryStatuses)} />
-                      {option.label}
                     </label>
                   ))}
                 </div>

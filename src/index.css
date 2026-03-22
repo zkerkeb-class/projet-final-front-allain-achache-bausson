@@ -1323,12 +1323,6 @@ main .grid > *:nth-child(6) { animation-delay: 400ms; }
     linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
 }
 
-.home-repetition-panel {
-  background:
-    radial-gradient(circle at top right, rgba(255, 177, 102, 0.12), transparent 35%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.04));
-}
-
 .home-random-panel {
   background:
     radial-gradient(circle at top right, rgba(110, 219, 200, 0.14), transparent 35%),
@@ -2449,57 +2443,6 @@ main .grid > *:nth-child(6) { animation-delay: 400ms; }
   }
 }
 
-/* ===== Machine page styles ===== */
-.laundry-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
-}
-
-.laundry-grid.recent {
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-}
-
-.laundry-card {
-  text-align: center;
-  display: grid;
-  gap: 10px;
-}
-
-.laundry-card.is-dirty {
-  border-color: rgba(255, 159, 182, 0.35);
-}
-
-.laundry-card.is-clean {
-  border-color: rgba(110, 219, 200, 0.32);
-}
-
-.laundry-card .meta-list {
-  text-align: left;
-}
-
-.laundry-actions {
-  justify-content: center;
-}
-
-.laundry-badge.clean {
-  background: rgba(110, 219, 200, 0.18);
-  border-color: rgba(110, 219, 200, 0.4);
-}
-
-.laundry-badge.dirty {
-  background: rgba(255, 159, 182, 0.16);
-  border-color: rgba(255, 159, 182, 0.42);
-}
-
-.laundry-zone.dirty {
-  border-color: rgba(255, 159, 182, 0.28);
-}
-
-.laundry-zone.clean {
-  border-color: rgba(110, 219, 200, 0.28);
-}
-
 .kard {
   background: var(--panel);
   border: 1px solid var(--stroke);
@@ -2822,8 +2765,7 @@ main .grid > *:nth-child(6) { animation-delay: 400ms; }
 
 .garment-history-list,
 .garment-related-outfits,
-.budget-breakdown,
-.goal-card-list {
+.budget-breakdown {
   display: grid;
   gap: 12px;
 }
@@ -2880,28 +2822,6 @@ main .grid > *:nth-child(6) { animation-delay: 400ms; }
 .calendar-preview-today .calendar-outfit-preview,
 .calendar-preview-today .canvas-preview {
   min-height: 88px;
-}
-
-.goal-card {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  padding: 14px;
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.progress-track {
-  width: 100%;
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  overflow: hidden;
-  margin: 10px 0 8px;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #ffc37a, #ff8ca1);
 }
 
 @media (max-width: 700px) {

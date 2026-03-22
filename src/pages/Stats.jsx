@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import Layout from '../components/Layout'
-import { buildApiUrl, buildAssetUrl } from '../config/api'
+import { apiFetch, buildAssetUrl, readApiError } from '../config/api'
 
 const piePalette = ['#f0c4ff', '#b18cff', '#ffcf70', '#6edbc8', '#ff9fb6', '#9fd0ff']
 const normalizeWhitespace = (value) => String(value || '').replace(/\s+/g, ' ').trim()
@@ -146,22 +146,16 @@ function Stats() {
 
       try {
         const [garmentsRes, outfitsRes] = await Promise.all([
-          fetch(buildApiUrl('/api/garments'), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(buildApiUrl('/api/outfits'), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          apiFetch('/api/garments'),
+          apiFetch('/api/outfits'),
         ])
 
         if (!garmentsRes.ok) {
-          const data = await garmentsRes.json().catch(() => ({}))
-          throw new Error(data.message || data.error || 'Erreur chargement statistiques')
+          throw new Error(await readApiError(garmentsRes, 'Erreur chargement statistiques'))
         }
 
         if (!outfitsRes.ok) {
-          const data = await outfitsRes.json().catch(() => ({}))
-          throw new Error(data.details || data.error || data.message || 'Erreur chargement statistiques')
+          throw new Error(await readApiError(outfitsRes, 'Erreur chargement statistiques'))
         }
 
         const garmentsData = await garmentsRes.json()
@@ -306,47 +300,6 @@ function Stats() {
       .sort((a, b) => b.total - a.total)
   }, [filteredItems])
 
-  const activeOutfits = useMemo(
-    () => outfits.filter((outfit) => (outfit.status || 'active') === 'active'),
-    [outfits]
-  )
-
-  const favoriteOutfits = useMemo(
-    () => outfits.filter((outfit) => outfit.isFavorite),
-    [outfits]
-  )
-
-  const wornItemsCount = useMemo(
-    () => filteredItems.filter((item) => getWearCount(item) > 0).length,
-    [filteredItems]
-  )
-
-  const goalCards = useMemo(() => {
-    const goals = [
-      {
-        label: 'Pieces deja portees',
-        current: wornItemsCount,
-        target: Math.max(10, Math.min(filteredItems.length || 10, 20)),
-      },
-      {
-        label: 'Tenues actives',
-        current: activeOutfits.length,
-        target: 8,
-      },
-      {
-        label: 'Tenues favorites',
-        current: favoriteOutfits.length,
-        target: 3,
-      },
-    ]
-
-    return goals.map((goal) => {
-      const safeTarget = Math.max(1, goal.target)
-      const progress = Math.min(100, Math.round((goal.current / safeTarget) * 100))
-      return { ...goal, progress }
-    })
-  }, [activeOutfits.length, favoriteOutfits.length, filteredItems.length, wornItemsCount])
-
   const toggleFilter = (group, value) => {
     setFilters((prev) => {
       const current = prev[group]
@@ -472,24 +425,6 @@ function Stats() {
             )) : (
               <div className="muted">Aucune piece jamais portee avec les filtres actuels.</div>
             )}
-          </div>
-        </div>
-
-        <div className="panel" id="stats-goals">
-          <h3>Objectifs dressing</h3>
-          <div className="goal-card-list">
-            {goalCards.map((goal) => (
-              <div className="goal-card" key={goal.label}>
-                <div className="row" style={{ justifyContent: 'space-between' }}>
-                  <strong>{goal.label}</strong>
-                  <span className="chip">{goal.current}/{goal.target}</span>
-                </div>
-                <div className="progress-track">
-                  <div className="progress-fill" style={{ width: `${goal.progress}%` }} />
-                </div>
-                <div className="muted">{goal.progress}% atteint</div>
-              </div>
-            ))}
           </div>
         </div>
 

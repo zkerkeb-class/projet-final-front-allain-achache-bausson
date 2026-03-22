@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import Layout from '../components/Layout'
-import { buildApiUrl } from '../config/api'
+import { apiFetch, readApiError } from '../config/api'
 import OutfitCanvasPreview from '../components/OutfitCanvasPreview'
 import { useToast } from '../context/ToastContext'
 
@@ -86,10 +86,6 @@ const scoreOutfitForDay = (outfit, season, weatherTags) => {
     const garment = entry?.garment
     const seasons = Array.isArray(garment?.seasons) ? garment.seasons : []
     const itemWeatherTags = Array.isArray(garment?.weatherTags) ? garment.weatherTags : []
-    const laundryStatus = garment?.laundryStatus || 'clean'
-
-    if (laundryStatus === 'dirty') score -= 5
-    else score += 1
 
     if (seasons.length) {
       score += seasons.includes(season) ? 2 : -2
@@ -133,22 +129,16 @@ function Calendrier() {
 
       try {
         const [outfitsRes, plansRes] = await Promise.all([
-          fetch(buildApiUrl('/api/outfits'), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(buildApiUrl(`/api/calendar?year=${year}`), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          apiFetch('/api/outfits'),
+          apiFetch(`/api/calendar?year=${year}`),
         ])
 
         if (!outfitsRes.ok) {
-          const data = await outfitsRes.json().catch(() => ({}))
-          throw new Error(data.details || data.error || data.message || 'Erreur chargement tenues')
+          throw new Error(await readApiError(outfitsRes, 'Erreur chargement tenues'))
         }
 
         if (!plansRes.ok) {
-          const data = await plansRes.json().catch(() => ({}))
-          throw new Error(data.details || data.error || data.message || 'Erreur chargement calendrier')
+          throw new Error(await readApiError(plansRes, 'Erreur chargement calendrier'))
         }
 
         const outfitsData = await outfitsRes.json()
@@ -311,14 +301,12 @@ function Calendrier() {
 
     try {
       if (!outfitId) {
-        const res = await fetch(buildApiUrl(`/api/calendar/${date}`), {
+        const res = await apiFetch(`/api/calendar/${date}`, {
           method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
         })
 
         if (!res.ok) {
-          const data = await res.json().catch(() => ({}))
-          throw new Error(data.details || data.error || data.message || 'Erreur suppression planning')
+          throw new Error(await readApiError(res, 'Erreur suppression planning'))
         }
 
         setPlans((prev) => {
@@ -335,18 +323,16 @@ function Calendrier() {
         return
       }
 
-      const res = await fetch(buildApiUrl(`/api/calendar/${date}`), {
+      const res = await apiFetch(`/api/calendar/${date}`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ outfitId }),
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur sauvegarde planning')
+        throw new Error(await readApiError(res, 'Erreur sauvegarde planning'))
       }
 
       const plan = await res.json()
@@ -377,16 +363,12 @@ function Calendrier() {
     setError('')
 
     try {
-      const res = await fetch(buildApiUrl(`/api/calendar/${todayIso}/mark-worn`), {
+      const res = await apiFetch(`/api/calendar/${todayIso}/mark-worn`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur validation tenue du jour')
+        throw new Error(await readApiError(res, 'Erreur validation tenue du jour'))
       }
 
       const data = await res.json()
@@ -401,7 +383,7 @@ function Calendrier() {
       toast.success(
         data.alreadyCounted
           ? 'Cette tenue etait deja comptee.'
-          : `${data.updatedGarments || 0} vetement(s) de la tenue du jour envoyes dans Laverie.`
+          : `${data.updatedGarments || 0} vetement(s) de la tenue du jour comptabilises.`
       )
     } catch (err) {
       setError(err.message || 'Erreur validation tenue du jour')
@@ -420,16 +402,12 @@ function Calendrier() {
     setError('')
 
     try {
-      const res = await fetch(buildApiUrl(`/api/calendar/${date}/mark-worn`), {
+      const res = await apiFetch(`/api/calendar/${date}/mark-worn`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur comptage port')
+        throw new Error(await readApiError(res, 'Erreur comptage port'))
       }
 
       const data = await res.json()
