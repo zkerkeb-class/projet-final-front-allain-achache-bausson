@@ -58,7 +58,7 @@ export const getPhotoWarnings = (analysis) => {
   const warnings = []
   if (!analysis) return warnings
   if (analysis.isDark) warnings.push('Photo sombre: ajoute plus de lumiere ou augmente l exposition avant import.')
-  if (analysis.isBlurry) warnings.push('Photo possiblement floue: le detourage risque d etre moins propre.')
+  if (analysis.isBlurry) warnings.push('Photo possiblement floue: le detourage risque d etre moins net.')
   return warnings
 }
 

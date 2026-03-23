@@ -4,6 +4,7 @@ import Dressing from "./pages/Dressing";
 import VetementDetail from "./pages/VetementDetail";
 import Tenues from "./pages/Tenues";
 import MesTenues from "./pages/MesTenues";
+import LookbookPublic from "./pages/LookbookPublic";
 import Tri from "./pages/Tri";
 import Machine from "./pages/Machine";
 import Stats from "./pages/Stats";
@@ -21,6 +22,7 @@ function App() {
         {/* Pages publiques */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/lookbook-public" element={<LookbookPublic />} />
 
         {/* Redirection racine */}
         <Route path="/" element={<Navigate to="/accueil" replace />} />

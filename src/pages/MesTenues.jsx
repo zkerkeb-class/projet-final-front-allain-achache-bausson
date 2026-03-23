@@ -105,6 +105,10 @@ function MesTenues() {
     }
   }
 
+  const handleTogglePublic = (outfit) => {
+    handleMetaUpdate(outfit, { isPublic: !outfit.isPublic })
+  }
+
   const handleWear = async (outfit) => {
     const token = localStorage.getItem('token')
     if (!token) return
@@ -173,6 +177,8 @@ function MesTenues() {
 
       if (Object.prototype.hasOwnProperty.call(updates, 'isFavorite')) {
         toast.success(updates.isFavorite ? 'Tenue ajoutee aux favoris.' : 'Tenue retiree des favoris.')
+      } else if (Object.prototype.hasOwnProperty.call(updates, 'isPublic')) {
+        toast.success(updates.isPublic ? 'Tenue rendue publique dans le lookbook.' : 'Tenue rendue privee.')
       } else if (updates.status) {
         toast.success(`Tenue marquee ${outfitStatusLabels[updates.status]?.toLowerCase() || 'mise a jour'}.`)
       }
@@ -420,6 +426,17 @@ function MesTenues() {
                       <span className={`chip outfit-status-chip ${status}`}>{outfitStatusLabels[status] || 'Active'}</span>
                       <span className="chip">{Array.isArray(outfit.items) ? outfit.items.length : 0} piece(s)</span>
                       <span className="chip">{wearCount} port(s)</span>
+                    </div>
+                    <div className="public-toggle">
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={outfit.isPublic || false}
+                          onChange={() => handleTogglePublic(outfit)}
+                          disabled={isBusy}
+                        />
+                        Rendre publique
+                      </label>
                     </div>
                     <div className="muted">Cree le {outfit.createdAt ? new Date(outfit.createdAt).toLocaleDateString() : '-'}</div>
                     <div className="muted">Dernier port: {formatDate(outfit.lastWornAt)}</div>

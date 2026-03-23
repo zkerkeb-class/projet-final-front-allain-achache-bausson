@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
@@ -7,6 +7,7 @@ const navLinks = [
   { to: "/dressing", label: "Dressing" },
   { to: "/tenues", label: "Tenues" },
   { to: "/mes-tenues", label: "Mes tenues" },
+  { to: "/lookbook-public", label: "Lookbook Public" },
   { to: "/tri", label: "Tri" },
   { to: "/machine", label: "Laverie" },
   { to: "/stats", label: "Statistiques" },
@@ -14,13 +15,12 @@ const navLinks = [
 ];
 
 function Layout({ title, children }) {
-  const { token, setToken, setUser } = useContext(AuthContext);
+  const { token, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.clear();
-    setToken(null);
-    setUser(null);
-    window.location.href = "#/login";
+    logout(); // centralise la logique (localStorage + state)
+    navigate("/login"); // navigation propre React Router
   };
 
   return (
@@ -40,18 +40,24 @@ function Layout({ title, children }) {
                 <NavLink
                   key={link.to}
                   to={link.to}
-                  className={({ isActive }) => `btn small nav-pill${isActive ? " active" : ""}`}
+                  className={({ isActive }) =>
+                    `btn small nav-pill${isActive ? " active" : ""}`
+                  }
                 >
                   {link.label}
                 </NavLink>
               ))}
             </nav>
 
-            {token ? (
-              <button className="btn small ghost" type="button" onClick={handleLogout}>
+            {token && (
+              <button
+                className="btn small ghost"
+                type="button"
+                onClick={handleLogout}
+              >
                 Deconnexion
               </button>
-            ) : null}
+            )}
           </div>
         </div>
       </header>
