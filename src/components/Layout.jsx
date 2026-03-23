@@ -9,7 +9,6 @@ const navLinks = [
   { to: "/mes-tenues", label: "Mes tenues" },
   { to: "/lookbook-public", label: "Lookbook Public" },
   { to: "/tri", label: "Tri" },
-  { to: "/machine", label: "Laverie" },
   { to: "/stats", label: "Statistiques" },
   { to: "/calendrier", label: "Calendrier" },
 ];

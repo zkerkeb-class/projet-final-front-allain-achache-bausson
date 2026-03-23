@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Layout from '../components/Layout'
 import OutfitCanvasPreview from '../components/OutfitCanvasPreview'
 import { AuthContext } from '../context/AuthContext'
-import { buildApiUrl, buildAssetUrl } from '../config/api'
+import { apiFetch, buildAssetUrl, readApiError } from '../config/api'
 
 const weatherCodeLabels = {
   0: 'Ciel degage',
@@ -50,21 +50,6 @@ const formatDateLabel = (value) => {
   const date = new Date(`${value}T12:00:00`)
   if (Number.isNaN(date.getTime())) return value
   return new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }).format(date)
-}
-
-const formatWearDate = (value) => {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return ''
-  return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(date)
-}
-
-const getDaysSince = (value) => {
-  if (!value) return null
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return null
-  const diff = Date.now() - date.getTime()
-  return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)))
 }
 
 const randomFromList = (items) => {
@@ -261,7 +246,6 @@ const scoreOutfitForWeather = (outfit, season, weatherTags) => {
   }
 
   let score = 0
-  let dirtyCount = 0
   let weatherMatchCount = 0
   const reasons = []
   const weatherTagSet = new Set(Array.isArray(weatherTags) ? weatherTags : [])
@@ -272,8 +256,6 @@ const scoreOutfitForWeather = (outfit, season, weatherTags) => {
     const category = String(garment?.category || '').toLowerCase()
 
     if (seasons.includes(season)) score += 3
-    if (garment?.laundryStatus === 'dirty') dirtyCount += 1
-
     garmentWeatherTags.forEach((tag) => {
       if (weatherTagSet.has(tag)) {
         score += 3
@@ -285,14 +267,6 @@ const scoreOutfitForWeather = (outfit, season, weatherTags) => {
     if (weatherTagSet.has('froid') && ['outer', 'top'].includes(category)) score += 1
     if (weatherTagSet.has('chaud') && ['dress', 'top', 'bottom'].includes(category)) score += 1
   })
-
-  if (dirtyCount === 0) {
-    score += 5
-    reasons.push('Pieces propres')
-  } else {
-    score -= dirtyCount * 5
-    reasons.push(`${dirtyCount} piece(s) a laver`)
-  }
 
   if (outfit.status === 'active') {
     score += 4
@@ -396,25 +370,18 @@ function Accueil() {
 
       try {
         const [garmentsRes, outfitsRes, calendarRes] = await Promise.all([
-          fetch(buildApiUrl('/api/garments'), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(buildApiUrl('/api/outfits'), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(buildApiUrl(`/api/calendar?year=${currentYear}`), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          apiFetch('/api/garments'),
+          apiFetch('/api/outfits'),
+          apiFetch(`/api/calendar?year=${currentYear}`),
         ])
 
         if (!garmentsRes.ok || !outfitsRes.ok || !calendarRes.ok) {
           const firstError = await Promise.all([
-            garmentsRes.ok ? null : garmentsRes.json().catch(() => ({})),
-            outfitsRes.ok ? null : outfitsRes.json().catch(() => ({})),
-            calendarRes.ok ? null : calendarRes.json().catch(() => ({})),
+            garmentsRes.ok ? null : readApiError(garmentsRes, 'Erreur chargement accueil'),
+            outfitsRes.ok ? null : readApiError(outfitsRes, 'Erreur chargement accueil'),
+            calendarRes.ok ? null : readApiError(calendarRes, 'Erreur chargement accueil'),
           ])
-          const payload = firstError.find(Boolean) || {}
-          throw new Error(payload.details || payload.error || payload.message || 'Erreur chargement accueil')
+          throw new Error(firstError.find(Boolean) || 'Erreur chargement accueil')
         }
 
         const [garmentsData, outfitsData, calendarData] = await Promise.all([
@@ -531,11 +498,6 @@ function Accueil() {
     [plans, todayIso]
   )
 
-  const dirtyCount = useMemo(
-    () => garments.filter((item) => item?.laundryStatus === 'dirty').length,
-    [garments]
-  )
-
   const favoriteCount = useMemo(
     () => outfits.filter((item) => item?.isFavorite).length,
     [outfits]
@@ -561,7 +523,6 @@ function Accueil() {
   const heroStats = [
     { label: 'Vetements', value: loading ? '...' : garments.length },
     { label: 'Tenues', value: loading ? '...' : outfits.length },
-    { label: 'A laver', value: loading ? '...' : dirtyCount },
     { label: 'Favoris', value: loading ? '...' : favoriteCount },
     { label: 'A retester', value: loading ? '...' : retestCount },
     { label: 'Jours planifies', value: loading ? '...' : plans.length },
@@ -585,48 +546,8 @@ function Accueil() {
     return ranked[0] || null
   }, [activeWeatherTags, currentSeason, outfits])
 
-  const repetitionInsight = useMemo(() => {
-    const ranked = [...outfits]
-      .filter((outfit) => outfit?.status !== 'archived' && Number(outfit?.wearCount || 0) > 0)
-      .map((outfit) => ({
-        outfit,
-        wearCount: Number(outfit.wearCount || 0),
-        lastWornAt: outfit.lastWornAt || '',
-        daysSince: getDaysSince(outfit.lastWornAt),
-      }))
-      .sort((a, b) => {
-        const aRecent = a.daysSince != null && a.daysSince <= 7 ? 1 : 0
-        const bRecent = b.daysSince != null && b.daysSince <= 7 ? 1 : 0
-
-        if (bRecent !== aRecent) return bRecent - aRecent
-        if (b.wearCount !== a.wearCount) return b.wearCount - a.wearCount
-        return new Date(b.lastWornAt || 0) - new Date(a.lastWornAt || 0)
-      })
-
-    const top = ranked[0]
-    const second = ranked[1]
-
-    if (!top) return null
-
-    const repeatedRecently = top.daysSince != null && top.daysSince <= 7 && top.wearCount >= 3
-    const repeatedOften = top.wearCount >= 5
-    const clearGap = top.wearCount - Number(second?.wearCount || 0) >= 2
-
-    if (!repeatedRecently && !repeatedOften && !clearGap) {
-      return null
-    }
-
-    return {
-      outfit: top.outfit,
-      wearCount: top.wearCount,
-      daysSince: top.daysSince,
-      lastWornLabel: formatWearDate(top.lastWornAt),
-    }
-  }, [outfits])
-
   const randomOutfitRecommendation = useMemo(() => {
-    const availableGarments = garments.filter((item) => item?.laundryStatus !== 'dirty')
-    const pool = availableGarments.length ? availableGarments : garments
+    const pool = garments
 
     if (!pool.length) return null
 
@@ -689,14 +610,6 @@ function Accueil() {
 
   const attentionCards = [
     {
-      label: 'Laverie',
-      value: dirtyCount,
-      tone: dirtyCount ? 'warning' : 'success',
-      description: dirtyCount ? 'piece(s) attendent un lavage avant de revenir dans tes looks.' : 'Tout est propre pour le moment.',
-      to: '/machine',
-      cta: dirtyCount ? 'Ouvrir la laverie' : 'Voir la laverie',
-    },
-    {
       label: 'Semaine',
       value: weekUnplannedCount,
       tone: weekUnplannedCount ? 'accent' : 'success',
@@ -716,7 +629,7 @@ function Accueil() {
       label: 'Photos',
       value: cutoutIssueCount,
       tone: cutoutIssueCount ? 'warning' : 'success',
-      description: cutoutIssueCount ? 'image(s) ont eu un echec de detourage et meritent une relance.' : 'Les imports photo recents sont propres.',
+      description: cutoutIssueCount ? 'image(s) ont eu un echec de detourage et meritent une relance.' : 'Les imports photo recents sont valides.',
       to: '/dressing',
       cta: cutoutIssueCount ? 'Corriger les images' : 'Voir le dressing',
     },
@@ -724,7 +637,7 @@ function Accueil() {
 
   const seasonSnapshot = useMemo(() => {
     const seasonalGarments = garments.filter((item) => Array.isArray(item?.seasons) && item.seasons.includes(currentSeason))
-    const readyGarments = seasonalGarments.filter((item) => item?.laundryStatus !== 'dirty')
+    const readyGarments = seasonalGarments
     const seasonalOutfits = outfits.filter((outfit) => {
       if (!outfit || outfit.status === 'archived') return false
       const outfitGarments = Array.isArray(outfit.items)
@@ -736,8 +649,7 @@ function Accueil() {
       const allSeasonMatch = outfitGarments.every(
         (garment) => Array.isArray(garment?.seasons) && garment.seasons.includes(currentSeason)
       )
-      const allClean = outfitGarments.every((garment) => garment?.laundryStatus !== 'dirty')
-      return allSeasonMatch && allClean
+      return allSeasonMatch
     })
 
     const categoryCoverage = [
@@ -1025,43 +937,6 @@ function Accueil() {
         </div>
 
         <div className="home-side-stack">
-          <div className="panel home-repetition-panel home-side-panel">
-            <div className="section-title">
-              <h3>Alerte repetition</h3>
-              <span className="chip">Rotation</span>
-            </div>
-            {repetitionInsight?.outfit ? (
-              <div className="home-today-card home-today-card-compact">
-                <OutfitCanvasPreview items={repetitionInsight.outfit.items} className="saved-outfit-canvas-small" />
-                <div className="home-today-meta">
-                  <strong>{repetitionInsight.outfit.name}</strong>
-                  <div className="chips">
-                    <span className="chip">{repetitionInsight.wearCount} port(s)</span>
-                    {repetitionInsight.daysSince != null ? (
-                      <span className="chip">
-                        {repetitionInsight.daysSince === 0 ? 'Portee aujourd hui' : `Il y a ${repetitionInsight.daysSince} jour(s)`}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="muted">
-                    {repetitionInsight.lastWornLabel
-                      ? `Tu reviens souvent vers cette tenue. Dernier port le ${repetitionInsight.lastWornLabel}.`
-                      : 'Cette tenue ressort beaucoup dans tes usages recents.'}
-                  </div>
-                  <div className="row">
-                    <Link className="btn small" to="/mes-tenues">Varier mes tenues</Link>
-                    <Link className="btn small ghost" to="/tenues">Composer autre chose</Link>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="home-empty-state">
-                <strong>Rotation plutot equilibree</strong>
-                <span className="muted">Aucune tenue ne domine clairement tes usages recents pour le moment.</span>
-              </div>
-            )}
-          </div>
-
           <div className="panel home-side-panel">
             <div className="section-title">
               <h3>Aujourd hui</h3>
@@ -1176,7 +1051,7 @@ function Accueil() {
             <strong>Couverture saisonniere</strong>
             <span className="muted">
               {seasonSnapshot.missingTargets.length
-                ? `${seasonSnapshot.readyGarments.length} piece(s) propres et ${seasonSnapshot.seasonalOutfits.length} tenue(s) prêtes actuellement.`
+                ? `${seasonSnapshot.readyGarments.length} piece(s) disponibles et ${seasonSnapshot.seasonalOutfits.length} tenue(s) prêtes actuellement.`
                 : 'Les grands types utiles a cette saison sont couverts dans ton dressing.'}
             </span>
             <div className="home-season-missing-copy">

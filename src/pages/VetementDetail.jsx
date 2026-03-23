@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import OutfitCanvasPreview from '../components/OutfitCanvasPreview'
-import { buildApiUrl, buildAssetUrl } from '../config/api'
+import { apiFetch, buildAssetUrl, readApiError } from '../config/api'
 
 const formatPrice = (value) => {
   const amount = Number(value)
@@ -50,24 +50,15 @@ function VetementDetail() {
       try {
         const currentYear = new Date().getFullYear()
         const [garmentsRes, outfitsRes, currentPlansRes, previousPlansRes] = await Promise.all([
-          fetch(buildApiUrl('/api/garments'), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(buildApiUrl('/api/outfits'), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(buildApiUrl(`/api/calendar?year=${currentYear}`), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(buildApiUrl(`/api/calendar?year=${currentYear - 1}`), {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          apiFetch('/api/garments'),
+          apiFetch('/api/outfits'),
+          apiFetch(`/api/calendar?year=${currentYear}`),
+          apiFetch(`/api/calendar?year=${currentYear - 1}`),
         ])
 
         for (const response of [garmentsRes, outfitsRes, currentPlansRes, previousPlansRes]) {
           if (!response.ok) {
-            const data = await response.json().catch(() => ({}))
-            throw new Error(data.details || data.error || data.message || 'Erreur chargement fiche vetement')
+            throw new Error(await readApiError(response, 'Erreur chargement fiche vetement'))
           }
         }
 
@@ -155,7 +146,6 @@ function VetementDetail() {
                 {garment.secondaryColor ? <span className="chip">{garment.secondaryColor}</span> : null}
                 <span className="chip">{conditionLabels[garment.condition || 'good'] || 'Bon etat'}</span>
                 {garment.brand ? <span className="chip">{garment.brand}</span> : null}
-                <span className="chip">{(garment.laundryStatus || 'clean') === 'dirty' ? 'A laver' : 'Propre'}</span>
                 {Array.isArray(garment.seasons) ? garment.seasons.map((season) => <span className="chip" key={season}>{season}</span>) : null}
               </div>
               <div className="stat-kpis">

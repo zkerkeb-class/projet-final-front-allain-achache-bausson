@@ -1,7 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
-import { buildApiUrl, buildAssetUrl } from '../config/api'
+import { apiFetch, buildAssetUrl, readApiError } from '../config/api'
 import { useToast } from '../context/ToastContext'
 import PaginationControls from '../components/PaginationControls'
 import { getPhotoWarnings, prepareImageForUpload } from '../utils/imagePreparation'
@@ -103,7 +103,6 @@ function Dressing() {
   const [colorFilter, setColorFilter] = useState('')
   const [brandFilter, setBrandFilter] = useState('')
   const [seasonFilter, setSeasonFilter] = useState('')
-  const [laundryFilter, setLaundryFilter] = useState('')
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(12)
   const [form, setForm] = useState(createEmptyForm)
@@ -182,13 +181,10 @@ function Dressing() {
     setPageError('')
 
     try {
-      const res = await fetch(buildApiUrl('/api/garments'), {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await apiFetch('/api/garments')
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.message || data.error || 'Erreur chargement dressing')
+        throw new Error(await readApiError(res, 'Erreur chargement dressing'))
       }
 
       const data = await res.json()
@@ -337,8 +333,7 @@ function Dressing() {
       const matchesBrand = !brandFilter || toTitleCase(item.brand || '') === brandFilter
       const itemSeasons = Array.isArray(item.seasons) ? item.seasons : []
       const matchesSeason = !seasonFilter || itemSeasons.includes(seasonFilter)
-      const matchesLaundry = !laundryFilter || (item.laundryStatus || 'clean') === laundryFilter
-      return matchesQuery && matchesCategory && matchesColor && matchesBrand && matchesSeason && matchesLaundry
+      return matchesQuery && matchesCategory && matchesColor && matchesBrand && matchesSeason
     })
 
     return [...filtered].sort((a, b) => {
@@ -352,11 +347,11 @@ function Dressing() {
 
       return new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
     })
-  }, [items, deferredSearch, categoryFilter, colorFilter, brandFilter, seasonFilter, laundryFilter, sortBy])
+  }, [items, deferredSearch, categoryFilter, colorFilter, brandFilter, seasonFilter, sortBy])
 
   useEffect(() => {
     setPage(1)
-  }, [deferredSearch, categoryFilter, colorFilter, brandFilter, seasonFilter, laundryFilter, sortBy])
+  }, [deferredSearch, categoryFilter, colorFilter, brandFilter, seasonFilter, sortBy])
 
   const resetWardrobeFilters = () => {
     setSearch('')
@@ -364,7 +359,6 @@ function Dressing() {
     setColorFilter('')
     setBrandFilter('')
     setSeasonFilter('')
-    setLaundryFilter('')
     setSortBy('recent')
     setPage(1)
   }
@@ -375,7 +369,6 @@ function Dressing() {
     colorFilter,
     brandFilter,
     seasonFilter,
-    laundryFilter,
     sortBy !== 'recent' ? sortBy : '',
   ].filter(Boolean).length
 
@@ -505,15 +498,13 @@ function Dressing() {
         warnings: getPhotoWarnings(preparedUpload?.analysis),
       }))
 
-      const res = await fetch(buildApiUrl('/api/garments/upload'), {
+      const res = await apiFetch('/api/garments/upload', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
         body: payload,
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur upload')
+        throw new Error(await readApiError(res, 'Erreur upload'))
       }
 
       const garment = await res.json()
@@ -545,18 +536,16 @@ function Dressing() {
     setEditError('')
 
     try {
-      const res = await fetch(buildApiUrl(`/api/garments/${editingItem._id}`), {
+      const res = await apiFetch(`/api/garments/${editingItem._id}`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(editForm),
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur modification')
+        throw new Error(await readApiError(res, 'Erreur modification'))
       }
 
       const updated = await res.json()
@@ -588,14 +577,12 @@ function Dressing() {
     setEditError('')
 
     try {
-      const res = await fetch(buildApiUrl(`/api/garments/${editingItem._id}`), {
+      const res = await apiFetch(`/api/garments/${editingItem._id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur suppression')
+        throw new Error(await readApiError(res, 'Erreur suppression'))
       }
 
       setItems((prev) => prev.filter((item) => item._id !== editingItem._id))
@@ -647,17 +634,13 @@ function Dressing() {
         })
       )
 
-      const res = await fetch(buildApiUrl(`/api/garments/${editingItem._id}/replace-image`), {
+      const res = await apiFetch(`/api/garments/${editingItem._id}/replace-image`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: payload,
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur remplacement photo')
+        throw new Error(await readApiError(res, 'Erreur remplacement photo'))
       }
 
       const updated = await res.json()
@@ -684,14 +667,12 @@ function Dressing() {
     setEditError('')
 
     try {
-      const res = await fetch(buildApiUrl(`/api/garments/${editingItem._id}/reprocess-cutout`), {
+      const res = await apiFetch(`/api/garments/${editingItem._id}/reprocess-cutout`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
       })
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.details || data.error || data.message || 'Erreur detourage')
+        throw new Error(await readApiError(res, 'Erreur detourage'))
       }
 
       const updated = await res.json()
@@ -771,11 +752,6 @@ function Dressing() {
         {seasonOptions.map((value) => (
           <option key={value} value={value}>{value}</option>
         ))}
-      </select>
-      <select value={laundryFilter} onChange={(event) => setLaundryFilter(event.target.value)}>
-        <option value="">Tous les etats</option>
-        <option value="clean">Propres</option>
-        <option value="dirty">A laver</option>
       </select>
       <select value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
         <option value="recent">Plus recents</option>
@@ -1101,7 +1077,6 @@ function Dressing() {
           {categoryFilter ? <span className="chip">{categoryFilter}</span> : null}
           {colorFilter ? <span className="chip">{colorFilter}</span> : null}
           {seasonFilter ? <span className="chip">{seasonFilter}</span> : null}
-          {laundryFilter ? <span className="chip">{laundryFilter === 'dirty' ? 'A laver' : 'Propres'}</span> : null}
         </div>
 
         <div className="wardrobe-toolbar desktop-only">

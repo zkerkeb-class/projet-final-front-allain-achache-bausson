@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Layout from '../components/Layout'
-import { buildApiUrl, buildAssetUrl } from '../config/api'
+import { apiFetch, buildAssetUrl, readApiError } from '../config/api'
 
 const conditionLabels = {
   perfect: 'Parfait etat',
@@ -43,7 +43,6 @@ const buildCandidateScore = (item, useLowWear, useWornOut) => {
     score += Number(conditionPenalty[condition] || 0) * 10
   }
 
-  if (item?.laundryStatus === 'dirty') score += 1
   return score
 }
 
@@ -67,13 +66,10 @@ function Tri() {
       setError('')
 
       try {
-        const res = await fetch(buildApiUrl('/api/garments?includeArchived=true'), {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const res = await apiFetch('/api/garments?includeArchived=true')
 
         if (!res.ok) {
-          const data = await res.json().catch(() => ({}))
-          throw new Error(data.details || data.error || data.message || 'Erreur chargement tri')
+          throw new Error(await readApiError(res, 'Erreur chargement tri'))
         }
 
         const data = await res.json()
@@ -122,18 +118,16 @@ function Tri() {
 
   const updateArchiveState = async (garmentId, archived) => {
     const token = localStorage.getItem('token')
-    const res = await fetch(buildApiUrl(`/api/garments/${garmentId}/archive`), {
+    const res = await apiFetch(`/api/garments/${garmentId}/archive`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ archived }),
     })
 
     if (!res.ok) {
-      const data = await res.json().catch(() => ({}))
-      throw new Error(data.details || data.error || data.message || 'Erreur mise a jour tri')
+      throw new Error(await readApiError(res, 'Erreur mise a jour tri'))
     }
 
     return res.json()
@@ -269,7 +263,7 @@ function Tri() {
                     </div>
                     <div className="tri-card-meta">
                       <span>Dernier port: {formatDate(current.lastWornAt)}</span>
-                      <span>{current.laundryStatus === 'dirty' ? 'A laver' : 'Propre'}</span>
+                      <span>Ports: {Number(current.wearCount || 0)}</span>
                     </div>
                   </div>
                 </button>

@@ -6,7 +6,6 @@ import Tenues from "./pages/Tenues";
 import MesTenues from "./pages/MesTenues";
 import LookbookPublic from "./pages/LookbookPublic";
 import Tri from "./pages/Tri";
-import Machine from "./pages/Machine";
 import Stats from "./pages/Stats";
 import Calendrier from "./pages/Calendrier";
 
@@ -73,14 +72,6 @@ function App() {
           element={
             <PrivateRoute>
               <Tri />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/machine"
-          element={
-            <PrivateRoute>
-              <Machine />
             </PrivateRoute>
           }
         />

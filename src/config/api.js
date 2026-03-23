@@ -36,4 +36,6 @@ export const apiFetch = async (path, options = {}) => {
   }
 
   return response;
+
 };
+
