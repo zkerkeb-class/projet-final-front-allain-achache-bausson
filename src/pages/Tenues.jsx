@@ -498,12 +498,12 @@ function Tenues() {
     }
 
     if (currentIndex == null || currentIndex === -1) {
-      toast.error('Ajoute d abord une piece sur le canvas.')
+      toast.error("Ajoute d'abord une pièce sur le canvas.")
       return
     }
 
     if (duplicateSelection[category] != null && duplicateSelection[category] !== -1) {
-      toast.info('Cette categorie a deja une copie sur le canvas.')
+      toast.info('Cette catégorie a déjà une copie sur le canvas.')
       return
     }
 
@@ -757,7 +757,7 @@ function Tenues() {
       setOutfitStatus(saved.status || 'active')
       setOutfitIsFavorite(Boolean(saved.isFavorite))
       setEditingOutfitId(saved._id || '')
-      toast.success(editingOutfitId ? 'Tenue mise a jour.' : 'Tenue enregistree.')
+      toast.success(editingOutfitId ? 'Tenue mise à jour.' : 'Tenue enregistrée.')
     } catch (err) {
       setSaveError(err.message || 'Erreur enregistrement tenue')
       toast.error(err.message || 'Erreur enregistrement tenue')
@@ -792,14 +792,14 @@ function Tenues() {
     <div className="panel tenues-subpanel tenues-filters-panel">
       <div className="section-title">
         <h3>Filtres</h3>
-        <div className="muted">{loading ? 'Chargement...' : `${filteredItems.length} vetement(s) disponibles pour composer`}</div>
+        <div className="muted">{loading ? 'Chargement...' : `${filteredItems.length} vêtement(s) disponibles pour composer`}</div>
       </div>
 
       <div className="tenues-filters-grid">
         {renderFilterDropdown('Occasions', availableOccasions, selectedOccasions, setSelectedOccasions)}
         {renderFilterDropdown('Couleurs', availableColors, selectedColors, setSelectedColors)}
         {renderFilterDropdown('Saisons', availableSeasons, selectedSeasons, setSelectedSeasons)}
-        {renderFilterDropdown('Meteo', availableWeatherTags, selectedWeatherTags, setSelectedWeatherTags)}
+        {renderFilterDropdown('Météo', availableWeatherTags, selectedWeatherTags, setSelectedWeatherTags)}
       </div>
 
       <div className="row">
@@ -813,19 +813,19 @@ function Tenues() {
   const selectorsPanel = (
     <div className="panel" id="selectors">
       <div className="section-title">
-        <h3>Selections par categorie</h3>
-        <div className="muted">Chaque categorie peut alimenter la piece principale et une copie sur le canvas.</div>
+        <h3>Sélections par catégorie</h3>
+        <div className="muted">Chaque catégorie peut alimenter la pièce principale et une copie sur le canvas.</div>
       </div>
 
       <div className="selector-carousel-head">
-        <button className="btn small ghost selector-nav-btn" type="button" onClick={() => moveSelectorCategory(-1)} aria-label="Categorie precedente">
+        <button className="btn small ghost selector-nav-btn" type="button" onClick={() => moveSelectorCategory(-1)} aria-label="Catégorie précédente">
           &lt;
         </button>
         <div className="selector-carousel-meta">
           <strong>{labels[selectorCategory] || selectorCategory}</strong>
           <span className="muted">{selectorCategoryIndex + 1}/{selectorCategories.length} · {selectorItems.length} option(s)</span>
         </div>
-        <button className="btn small ghost selector-nav-btn" type="button" onClick={() => moveSelectorCategory(1)} aria-label="Categorie suivante">
+        <button className="btn small ghost selector-nav-btn" type="button" onClick={() => moveSelectorCategory(1)} aria-label="Catégorie suivante">
           &gt;
         </button>
       </div>
@@ -836,11 +836,11 @@ function Tenues() {
             {selectorCurrentItem && selectorCurrentSrc ? (
               <img src={selectorCurrentSrc} alt={selectorCurrentItem.title || selectorCategory} />
             ) : (
-              <div className="selector-empty">Aucune piece</div>
+              <div className="selector-empty">Aucune pièce</div>
             )}
           </div>
 
-          <div className="muted selector-title">{selectorCurrentItem ? selectorCurrentItem.title || 'Sans nom' : 'Aucune selection'}</div>
+          <div className="muted selector-title">{selectorCurrentItem ? selectorCurrentItem.title || 'Sans nom' : 'Aucune sélection'}</div>
 
           <div className="chips">
             {selectorIsOnCanvas ? <span className="chip">Piece active</span> : null}
@@ -1044,7 +1044,7 @@ function Tenues() {
               </div>
 
               <div className="field">
-                <label>Meteo</label>
+                <label>Météo</label>
                 <div className="chips">
                   {availableWeatherTags.map((value) => (
                     <label className="chip" key={value}>
@@ -1059,7 +1059,7 @@ function Tenues() {
                 <button className="btn" type="button" onClick={resetFilters}>Reset filtres</button>
               </div>
 
-              <div className="muted">{loading ? 'Chargement...' : `${filteredItems.length} vetement(s) disponibles pour composer`}</div>
+              <div className="muted">{loading ? 'Chargement...' : `${filteredItems.length} vêtement(s) disponibles pour composer`}</div>
               {error ? <div className="muted" style={{ color: '#b00020' }}>{error}</div> : null}
             </div>
 
@@ -1193,7 +1193,7 @@ function Tenues() {
                   }) : (
                     <div className="canvas-empty">
                       <strong>Le canvas est vide</strong>
-                      <span>Selectionne des vetements dans les cartes ci-dessous.</span>
+                      <span>Sélectionne des vêtements dans les cartes ci-dessous.</span>
                     </div>
                   )}
                 </div>
@@ -1209,12 +1209,12 @@ function Tenues() {
       <div className="panel" id="outfits" style={{ marginTop: '12px' }}>
         <div className="row">
           <h2>Mes tenues</h2>
-          <div className="muted">{outfits.length} tenue(s) sauvegardee(s)</div>
+          <div className="muted">{outfits.length} tenue(s) sauvegardée(s)</div>
         </div>
         {editingOutfitId ? (
           <div className="row" style={{ marginBottom: '10px' }}>
             <span className="chip">Mode modification</span>
-            <span className="muted">Tu modifies la tenue enregistree "{outfitName || 'Sans nom'}".</span>
+            <span className="muted">Tu modifies la tenue enregistrée "{outfitName || 'Sans nom'}".</span>
             <button className="btn small" type="button" onClick={resetComposer}>Quitter la modification</button>
           </div>
         ) : null}
@@ -1230,7 +1230,7 @@ function Tenues() {
             Favori
           </label>
           <button className="btn primary" type="button" onClick={handleSaveOutfit} disabled={saving}>
-            {saving ? 'Enregistrement...' : editingOutfitId ? 'Mettre a jour la tenue' : 'Enregistrer la tenue'}
+            {saving ? 'Enregistrement...' : editingOutfitId ? 'Mettre ? jour la tenue' : 'Enregistrer la tenue'}
           </button>
         </div>
         {saveError ? <div className="muted" style={{ color: '#b00020' }}>{saveError}</div> : null}
@@ -1254,7 +1254,7 @@ function Tenues() {
               </div>
             </div>
           )) : (
-            <div className="muted">Aucune tenue enregistree pour le moment.</div>
+            <div className="muted">Aucune tenue enregistrée pour le moment.</div>
           )}
         </div>
       </div>

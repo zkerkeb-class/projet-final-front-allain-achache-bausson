@@ -6,22 +6,22 @@ import { AuthContext } from '../context/AuthContext'
 import { apiFetch, buildAssetUrl, readApiError } from '../config/api'
 
 const weatherCodeLabels = {
-  0: 'Ciel degage',
-  1: 'Plutot ensoleille',
+  0: 'Ciel dégagé',
+  1: 'Plutôt ensoleillé',
   2: 'Peu nuageux',
   3: 'Couvert',
   45: 'Brouillard',
   48: 'Brouillard dense',
-  51: 'Bruine legere',
+  51: 'Bruine legère',
   53: 'Bruine',
   55: 'Bruine soutenue',
-  61: 'Pluie legere',
+  61: 'Pluie legère',
   63: 'Pluie',
   65: 'Pluie forte',
-  71: 'Neige legere',
+  71: 'Neige legère',
   73: 'Neige',
   75: 'Neige forte',
-  80: 'Averses legeres',
+  80: 'Averses legères',
   81: 'Averses',
   82: 'Fortes averses',
   95: 'Orage',
@@ -138,14 +138,14 @@ const getWeeklyDates = (startDate = new Date(), count = 7) => {
 const getGreeting = () => {
   const hour = new Date().getHours()
   if (hour < 12) return 'Bonjour'
-  if (hour < 18) return 'Bon apres-midi'
+  if (hour < 18) return 'Bon après-midi'
   return 'Bonsoir'
 }
 
 const inferSeasonFromDate = (date = new Date()) => {
   const month = date.getMonth()
   if (month >= 2 && month <= 4) return 'printemps'
-  if (month >= 5 && month <= 7) return 'ete'
+  if (month >= 5 && month <= 7) return 'été'
   if (month >= 8 && month <= 10) return 'automne'
   return 'hiver'
 }
@@ -190,8 +190,8 @@ const getWeatherEmoji = (weather) => {
 const getWeatherAdvice = (weather) => {
   if (!weather) {
     return {
-      title: 'Tenue a ajuster selon ta journee',
-      detail: 'Sans meteo locale, garde une base polyvalente et adapte avec une couche en plus si besoin.',
+      title: 'Tenue à ajuster selon ta journée',
+      detail: 'Sans météo locale, garde une base polyvalente et adaptée avec une couche en plus si besoin.',
     }
   }
 
@@ -201,34 +201,34 @@ const getWeatherAdvice = (weather) => {
   if ([51, 53, 55, 61, 63, 65, 80, 81, 82, 95].includes(code)) {
     return {
       title: 'Pense aux couches de pluie',
-      detail: 'Mise sur une tenue pratique avec veste ou piece exterieure adaptee et chaussures moins sensibles.',
+      detail: 'Mise sur une tenue pratique avec veste ou pièce extérieure adaptée et chaussures moins sensibles.',
     }
   }
 
   if (felt <= 8) {
     return {
-      title: 'Journee froide',
-      detail: 'Privilgie une tenue chaude, des superpositions et des matieres plus couvrantes.',
+      title: 'Journée froide',
+      detail: 'Privilégie une tenue chaude, des superpositions et des matières plus couvrantes.',
     }
   }
 
   if (felt >= 24) {
     return {
-      title: 'Journee chaude',
-      detail: 'Favorise des pieces legeres et respirantes pour rester a l aise toute la journee.',
+      title: 'Journée chaude',
+      detail: "Favorise des pieces légères et respirantes pour rester à l'aise toute la journée.",
     }
   }
 
   if ([0, 1].includes(code)) {
     return {
       title: 'Temps clair et stable',
-      detail: 'C est un bon jour pour sortir une tenue favorite ou plus visible sans surcouche lourde.',
+      detail: "C'est un bon jour pour sortir une tenue favorite ou plus visible sans surcouche lourde.",
     }
   }
 
   return {
-    title: 'Meteo plutot douce',
-    detail: 'Une tenue equilibree devrait suffire, avec une couche facile a retirer si la temperature monte.',
+    title: 'Météo plutot douce',
+    detail: 'Une tenue équilibrée devrait suffire, avec une couche facile a retirer si la température monte.',
   }
 }
 
@@ -305,19 +305,19 @@ const scoreOutfitForWeather = (outfit, season, weatherTags) => {
 
     if (weatherMatchCount === 0) {
       score -= 10
-      reasons.push('Meteo peu adaptee')
+      reasons.push('Météo peu adaptée')
     } else if (weatherMatchCount >= Math.max(1, Math.ceil(garments.length / 2))) {
       score += 6
-      reasons.push('Meteo bien adaptee')
+      reasons.push('Météo bien adaptée')
     } else {
       score += 2
-      reasons.push('Meteo partiellement adaptee')
+      reasons.push('Météo partiellement adaptée')
     }
 
     if (weatherTagSet.has('pluie')) {
       if (hasRainSupport) {
         score += 4
-        reasons.push('Prete pour la pluie')
+        reasons.push('Prête pour la pluie')
       } else {
         score -= 7
       }
@@ -326,7 +326,7 @@ const scoreOutfitForWeather = (outfit, season, weatherTags) => {
     if (weatherTagSet.has('froid')) {
       if (hasColdSupport) {
         score += 4
-        reasons.push('Adaptee au froid')
+        reasons.push('Adaptée au froid')
       } else {
         score -= 7
       }
@@ -335,7 +335,7 @@ const scoreOutfitForWeather = (outfit, season, weatherTags) => {
     if (weatherTagSet.has('chaud')) {
       if (hasHotSupport) {
         score += 4
-        reasons.push('Adaptee a la chaleur')
+        reasons.push('Adaptée à la chaleur')
       } else {
         score -= 5
       }
@@ -418,7 +418,7 @@ function Accueil() {
 
     const loadWeather = async () => {
       if (!navigator.geolocation) {
-        setWeatherError('La geolocalisation n est pas disponible sur cet appareil.')
+        setWeatherError('La géolocalisation n est pas disponible sur cet appareil.')
         setWeatherLoading(false)
         return
       }
@@ -439,7 +439,7 @@ function Accueil() {
 
             const res = await fetch(url.toString())
             if (!res.ok) {
-              throw new Error('Impossible de recuperer la meteo du jour.')
+              throw new Error('Impossible de récupérer la météo du jour.')
             }
 
             const data = await res.json()
@@ -455,7 +455,7 @@ function Accueil() {
             })
           } catch (err) {
             if (!cancelled) {
-              setWeatherError(err.message || 'Impossible de recuperer la meteo du jour.')
+              setWeatherError(err.message || 'Impossible de récupérer la météo du jour.')
             }
           } finally {
             if (!cancelled) {
@@ -465,7 +465,7 @@ function Accueil() {
         },
         () => {
           if (!cancelled) {
-            setWeatherError('Autorise la localisation pour afficher la meteo du jour.')
+            setWeatherError('Autorise la localisation pour afficher la météo du jour.')
             setWeatherLoading(false)
           }
         },
@@ -521,7 +521,7 @@ function Accueil() {
   const weekUnplannedCount = Math.max(0, weeklyDates.length - weekPlannedCount)
 
   const heroStats = [
-    { label: 'Vetements', value: loading ? '...' : garments.length },
+    { label: 'Vêtements', value: loading ? '...' : garments.length },
     { label: 'Tenues', value: loading ? '...' : outfits.length },
     { label: 'Favoris', value: loading ? '...' : favoriteCount },
     { label: 'A retester', value: loading ? '...' : retestCount },
@@ -613,9 +613,9 @@ function Accueil() {
       label: 'Semaine',
       value: weekUnplannedCount,
       tone: weekUnplannedCount ? 'accent' : 'success',
-      description: weekUnplannedCount ? 'jour(s) restent sans tenue planifiee sur les 7 prochains jours.' : 'Les 7 prochains jours sont deja couverts.',
+      description: weekUnplannedCount ? 'jour(s) restent sans tenue planifiée sur les 7 prochains jours.' : 'Les 7 prochains jours sont déjà couverts.',
       to: '/calendrier',
-      cta: weekUnplannedCount ? 'Completer la semaine' : 'Verifier le planning',
+      cta: weekUnplannedCount ? 'Compléter la semaine' : 'Vérifier le planning',
     },
     {
       label: 'Tenues a revoir',
@@ -629,7 +629,7 @@ function Accueil() {
       label: 'Photos',
       value: cutoutIssueCount,
       tone: cutoutIssueCount ? 'warning' : 'success',
-      description: cutoutIssueCount ? 'image(s) ont eu un echec de detourage et meritent une relance.' : 'Les imports photo recents sont valides.',
+      description: cutoutIssueCount ? 'image(s) ont eu un échec de détourage et méritent une relance.' : 'Les imports photo récents sont valides.',
       to: '/dressing',
       cta: cutoutIssueCount ? 'Corriger les images' : 'Voir le dressing',
     },
@@ -742,7 +742,7 @@ function Accueil() {
           <div className="site-eyebrow">Tableau de bord dressing</div>
           <h2>{getGreeting()}, {displayName}</h2>
           <p className="muted">
-            Retrouve en un coup d oeil l etat de ton dressing, ta tenue du jour, la meteo locale et tes prochains looks planifies.
+            Retrouve en un coup d'œil l'état de ton dressing, ta tenue du jour, la météo locale et tes prochains looks planifiés.
           </p>
           <div className="chips">
             <span className="chip">Saison: {currentSeason}</span>
@@ -751,7 +751,7 @@ function Accueil() {
             ))}
           </div>
           <div className="row">
-            <Link className="btn primary" to="/dressing">Ajouter un vetement</Link>
+            <Link className="btn primary" to="/dressing">Ajouter un vêtement</Link>
             <Link className="btn" to="/tenues">Composer une tenue</Link>
             <Link className="btn ghost" to="/calendrier">Ouvrir le calendrier</Link>
           </div>
@@ -760,11 +760,11 @@ function Accueil() {
         <div className="home-hero-side">
           <div className="home-weather-card">
             <div className="section-title">
-              <h3>Meteo du jour</h3>
+              <h3>Météo du jour</h3>
               <span className="chip">Autour de vous</span>
             </div>
             {weatherLoading ? (
-              <div className="muted">Recherche de la localisation et de la meteo...</div>
+              <div className="muted">Recherche de la localisation et de la météo...</div>
             ) : weather ? (
               <div className="home-weather-grid">
                 <div className="home-weather-main">
@@ -778,7 +778,7 @@ function Accueil() {
                 </div>
               </div>
             ) : (
-              <div className="muted">{weatherError || 'Meteo indisponible pour le moment.'}</div>
+              <div className="muted">{weatherError || 'Météo indisponible pour le moment.'}</div>
             )}
             <div className="home-weather-advice">
               <strong>{weatherAdvice.title}</strong>
@@ -818,8 +818,8 @@ function Accueil() {
                   </div>
                   <div className="muted">
                     {weather
-                      ? `Suggestion basee sur ${weatherLabel.toLowerCase()}, la saison ${currentSeason} et l etat de tes pieces.`
-                      : `Suggestion basee sur la saison ${currentSeason} et l etat de tes pieces.`}
+                      ? `Suggestion basee sur ${weatherLabel.toLowerCase()}, la saison ${currentSeason} et l'état de tes pieces.`
+                      : `Suggestion basee sur la saison ${currentSeason} et l'état de tes pieces.`}
                   </div>
                   <div className="row">
                     <Link className="btn small" to="/mes-tenues">Voir mes tenues</Link>
@@ -830,7 +830,7 @@ function Accueil() {
             ) : (
               <div className="home-empty-state">
                 <strong>Aucune suggestion fiable pour le moment</strong>
-                <span className="muted">Ajoute des saisons, des conditions meteo et plus de tenues pour obtenir une recommandation vraiment pertinente.</span>
+                <span className="muted">Ajoute des saisons, des conditions météo et plus de tenues pour obtenir une recommandation vraiment pertinente.</span>
               </div>
             )}
           </div>
@@ -878,7 +878,7 @@ function Accueil() {
               </div>
             ) : (
               <div className="home-empty-state">
-                <strong>Pas assez de vetements pour une surprise</strong>
+                <strong>Pas assez de vêtements pour une surprise</strong>
                 <span className="muted">Ajoute quelques pieces dans ton dressing pour generer une composition aleatoire differente a chaque relance.</span>
               </div>
 	            )}
@@ -952,7 +952,7 @@ function Accueil() {
                     {todayPlan.outfit.isFavorite ? <span className="chip">Favori</span> : null}
                   </div>
                   <div className="muted">
-                    {weather ? `Meteo conseillee: ${weatherLabel.toLowerCase()}.` : 'Ajuste ta tenue selon la meteo du jour.'}
+                    {weather ? `Météo conseillée: ${weatherLabel.toLowerCase()}.` : 'Ajuste ta tenue selon la météo du jour.'}
                   </div>
                   <div className="row">
                     <Link className="btn small" to="/calendrier">Modifier le planning</Link>
@@ -962,7 +962,7 @@ function Accueil() {
               </div>
             ) : (
               <div className="home-empty-state">
-                <strong>Aucune tenue planifiee aujourd hui</strong>
+                <strong>Aucune tenue planifiée aujourd'hui</strong>
                 <span className="muted">Passe par le calendrier pour preparer ton look du jour ou compose une nouvelle tenue.</span>
                 <div className="row">
                   <Link className="btn small" to="/calendrier">Planifier</Link>
@@ -1035,7 +1035,7 @@ function Accueil() {
             <div className="kpi home-season-kpi-card">
               <div className="label">Tenues pretes</div>
               <div className="big">{seasonSnapshot.seasonalOutfits.length}</div>
-              <span className="muted">deja exploitables</span>
+              <span className="muted">déjà exploitables</span>
             </div>
           </div>
           <div className="home-season-progress">
@@ -1096,8 +1096,8 @@ function Accueil() {
                 </div>
               ) : (
                 <div className="home-empty-state">
-                  <strong>Aucune piece de saison</strong>
-                  <span className="muted">Ajoute ou renseigne des saisons sur tes vetements.</span>
+                  <strong>Aucune pièce de saison</strong>
+                  <span className="muted">Ajoute ou renseigne des saisons sur tes vêtements.</span>
                 </div>
               )}
             </div>

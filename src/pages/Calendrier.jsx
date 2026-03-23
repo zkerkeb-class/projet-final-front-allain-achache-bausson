@@ -382,8 +382,8 @@ function Calendrier() {
       }))
       toast.success(
         data.alreadyCounted
-          ? 'Cette tenue etait deja comptee.'
-          : `${data.updatedGarments || 0} vetement(s) de la tenue du jour comptabilises.`
+          ? 'Cette tenue était déjà comptée.'
+          : `${data.updatedGarments || 0} vêtement(s) de la tenue du jour comptabilisés.`
       )
     } catch (err) {
       setError(err.message || 'Erreur validation tenue du jour')
@@ -421,7 +421,7 @@ function Calendrier() {
       }))
       toast.success(
         data.alreadyCounted
-          ? 'Ce jour etait deja compte.'
+          ? 'Ce jour était déjà compt?.'
           : `Port comptabilise pour le ${date}.`
       )
     } catch (err) {
@@ -486,13 +486,13 @@ function Calendrier() {
                   onClick={markPlannedOutfitAsWorn}
                   disabled={Boolean(todayPlan?.wearLoggedAt) || wearingId === todayIso}
                 >
-                  {todayPlan?.wearLoggedAt ? 'Deja comptee' : wearingId === todayIso ? 'Mise a jour...' : "Porter aujourd'hui"}
+                  {todayPlan?.wearLoggedAt ? 'Déjà comptée' : wearingId === todayIso ? 'Mise à jour...' : "Porter aujourd'hui"}
                 </button>
               </div>
             </>
           ) : (
             <div>
-              <div className="muted" style={{ marginBottom: '8px' }}>Aucune tenue planifiee aujourd'hui.</div>
+              <div className="muted" style={{ marginBottom: '8px' }}>Aucune tenue planifiée aujourd'hui.</div>
               {Array.isArray(suggestedOutfitsByDate[todayIso]) && suggestedOutfitsByDate[todayIso].length ? (
                 <div className="calendar-suggestions calendar-suggestions-today">
                   {suggestedOutfitsByDate[todayIso].map((suggestion) => (
@@ -537,7 +537,7 @@ function Calendrier() {
                   <div className="calendar-cell-head">
                     <div className="d">{cell.day}</div>
                     {dailyWeather ? (
-                      <div className="calendar-weather-chip" title={`Meteo prevue: ${dailyWeather.temperature} C`}>
+                      <div className="calendar-weather-chip" title={`Météo prévue: ${dailyWeather.temperature} C`}>
                         <span>{weatherEmoji}</span>
                         <span>{dailyWeather.temperature}C</span>
                       </div>

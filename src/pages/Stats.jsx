@@ -17,9 +17,9 @@ const formatPrice = (value) => {
 }
 
 const formatDate = (value) => {
-  if (!value) return 'Non renseignee'
+  if (!value) return 'Non renseignée'
   const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return 'Non renseignee'
+  if (Number.isNaN(date.getTime())) return 'Non renseignée'
   return date.toLocaleDateString()
 }
 
@@ -324,7 +324,7 @@ function Stats() {
       <div className="panel" style={{ marginBottom: '12px' }}>
         <div className="stat-kpis">
           <div className="kpi">
-            <div className="label">Vetements filtres</div>
+            <div className="label">Vêtements filtrés</div>
             <div className="big">{filteredItems.length}</div>
           </div>
           <div className="kpi">
@@ -340,7 +340,7 @@ function Stats() {
             <div className="big">{globalPricePerWear == null ? 'Aucun port' : formatPrice(globalPricePerWear)}</div>
           </div>
           <div className="kpi">
-            <div className="label">Jamais portes</div>
+            <div className="label">Jamais portés</div>
             <div className="big">{neverWornItems.length}</div>
           </div>
           <div className="kpi">
@@ -356,7 +356,7 @@ function Stats() {
 
           <div className="grid cols-3">
             <div className="field">
-              <label>Categories</label>
+              <label>Catégories</label>
               <div className="chips">
                 {availableCategories.map((value) => (
                   <label className="chip" key={value}>
@@ -406,7 +406,7 @@ function Stats() {
 
           <div className="row" style={{ marginTop: '6px' }}>
             <button className="btn small" type="button" onClick={resetFilters}>Reinitialiser</button>
-            <span className="muted">{loading ? 'Chargement...' : `${items.length} vetement(s) au total`}</span>
+            <span className="muted">{loading ? 'Chargement...' : `${items.length} vêtement(s) au total`}</span>
           </div>
 
           {error ? <div className="muted" style={{ color: '#b00020', marginTop: '8px' }}>{error}</div> : null}
@@ -419,11 +419,11 @@ function Stats() {
               <StatsCard
                 key={item._id}
                 item={item}
-                subtitle="Jamais porte"
+                subtitle="Jamais porté"
                 detail={`Prix: ${formatPrice(item.price)}`}
               />
             )) : (
-              <div className="muted">Aucune piece jamais portee avec les filtres actuels.</div>
+              <div className="muted">Aucune pièce jamais portée avec les filtres actuels.</div>
             )}
           </div>
         </div>
@@ -459,7 +459,7 @@ function Stats() {
         </div>
 
         <div className="panel" id="stats-most">
-          <h3>Pieces les plus portees</h3>
+          <h3>Pièces les plus portées</h3>
           {mostWornItems.length ? (
             <div className="stat-grid">
               {mostWornItems.slice(0, 4).map((item) => (
@@ -472,7 +472,7 @@ function Stats() {
               ))}
             </div>
           ) : (
-            <div className="muted">Aucune piece portee avec les filtres actuels.</div>
+            <div className="muted">Aucune pièce portée avec les filtres actuels.</div>
           )}
         </div>
 
@@ -521,7 +521,7 @@ function Stats() {
                   key={item._id}
                   item={item}
                   subtitle={`Prix: ${formatPrice(item.price)}`}
-                  detail={`Marque: ${normalizeBrand(item.brand) || 'Non renseignee'}`}
+                  detail={`Marque: ${normalizeBrand(item.brand) || 'Non renseignée'}`}
                 />
               ))}
             </div>
@@ -532,7 +532,7 @@ function Stats() {
 
         <div className="panel" id="stats-occs">
           <h3>Repartition par occasion</h3>
-          <StatPie items={occasionStats} emptyLabel="Aucune occasion renseignee pour le moment." />
+          <StatPie items={occasionStats} emptyLabel="Aucune occasion renseignée pour le moment." />
         </div>
 
         <div className="panel" id="stats-cols">
@@ -545,11 +545,11 @@ function Stats() {
           <div className="stat-split">
             <div>
               <h4>Marques</h4>
-              <StatPie items={brandStats} emptyLabel="Aucune marque renseignee." />
+              <StatPie items={brandStats} emptyLabel="Aucune marque renseignée." />
             </div>
             <div>
               <h4>Origines</h4>
-              <StatPie items={originStats} emptyLabel="Aucune origine renseignee." />
+              <StatPie items={originStats} emptyLabel="Aucune origine renseignée." />
             </div>
           </div>
         </div>

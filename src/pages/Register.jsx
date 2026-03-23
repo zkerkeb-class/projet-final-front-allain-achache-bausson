@@ -20,7 +20,7 @@ function Register() {
 
     const data = await res.json();
     if (res.ok) {
-      toast.success("Compte cree. Tu peux maintenant te connecter.");
+      toast.success("Compte cr??. Tu peux maintenant te connecter.");
       navigate("/login");
     } else {
       toast.error(data.message || "Erreur lors de l'inscription.");
@@ -29,7 +29,7 @@ function Register() {
 
   return (
     <div className="panel" style={{ maxWidth: "400px", margin: "50px auto" }}>
-      <h2>Creer un compte</h2>
+      <h2>Créer un compte</h2>
       <form onSubmit={handleSubmit}>
         <div className="field">
           <label>Email</label>

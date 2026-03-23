@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { buildApiUrl } from "../config/api";
+import { buildApiUrl, readApiError } from "../config/api";
 import { AuthContext } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 
@@ -28,20 +28,25 @@ function Login() {
         }),
       });
 
-      const data = await res.json().catch(() => ({}));
       if (res.ok) {
+        const data = await res.json().catch(() => ({}));
         login(data);
         localStorage.setItem("userId", data.userId);
-        toast.success("Connexion reussie.");
+        toast.success("Connexion réussie.");
         navigate("/accueil");
         return;
       }
 
-      const message = data.error || data.details || data.message || "Erreur de connexion.";
+      const message = await readApiError(res, "Erreur de connexion.");
       setError(message);
       toast.error(message);
     } catch (err) {
-      const message = err.message || "Impossible de contacter le serveur.";
+      const isNetworkError =
+        err?.name === "TypeError" &&
+        String(err?.message || "").toLowerCase().includes("fetch");
+      const message = isNetworkError
+        ? "Serveur injoignable. Vérifie que le back tourne sur http://localhost:5000."
+        : err.message || "Impossible de contacter le serveur.";
       setError(message);
       toast.error(message);
     } finally {
@@ -67,7 +72,7 @@ function Login() {
         </button>
       </form>
       <p style={{ marginTop: "12px" }}>
-        Pas encore enregistree ? <Link to="/register">Cree un compte</Link>
+        Pas encore enregistrée ? <Link to="/register">Crée un compte</Link>
       </p>
     </div>
   );

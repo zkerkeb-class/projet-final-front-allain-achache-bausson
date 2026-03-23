@@ -15,9 +15,9 @@ const conditionPenalty = {
 }
 
 const formatDate = (value) => {
-  if (!value) return 'Jamais porte'
+  if (!value) return 'Jamais porté'
   const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return 'Jamais porte'
+  if (Number.isNaN(date.getTime())) return 'Jamais porté'
   return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }).format(date)
 }
 
@@ -127,7 +127,7 @@ function Tri() {
     })
 
     if (!res.ok) {
-      throw new Error(await readApiError(res, 'Erreur mise a jour tri'))
+      throw new Error(await readApiError(res, 'Erreur mise à jour tri'))
     }
 
     return res.json()
@@ -149,7 +149,7 @@ function Tri() {
       setLastAction({ type: 'archive', garment: current })
       setDrag({ x: 0, active: false })
     } catch (err) {
-      setError(err.message || 'Erreur mise a jour tri')
+      setError(err.message || 'Erreur mise à jour tri')
     }
   }
 
@@ -205,7 +205,7 @@ function Tri() {
       <div className="panel tri-hero">
         <div className="section-title">
           <h2>Tri du dressing</h2>
-          <div className="muted">Swipe a droite pour garder, a gauche pour ecarter.</div>
+          <div className="muted">Swipe ? droite pour garder, ? gauche pour Écarter.</div>
         </div>
         <div className="tri-toolbar">
           <label className="chip chip-toggle">
@@ -217,7 +217,7 @@ function Tri() {
             Uses
           </label>
           <span className="chip">{candidates.length} a trier</span>
-          <span className="chip">{archivedGarments.length} ecartes</span>
+          <span className="chip">{archivedGarments.length} écartés</span>
           <button className="btn small ghost" type="button" onClick={handleUndo} disabled={!lastAction}>
             Annuler
           </button>
@@ -270,7 +270,7 @@ function Tri() {
               ) : (
                 <div className="tri-empty-state">
                   <strong>Plus rien a trier</strong>
-                  <span className="muted">Ajuste les filtres ou restaure un vetement ecarte.</span>
+                  <span className="muted">Ajuste les filtres ou restaure un vêtement écarté.</span>
                 </div>
               )}
             </div>
@@ -305,7 +305,7 @@ function Tri() {
               </div>
             </div>
             <div className="muted">
-              La pile cible d’abord les vetements peu portes et ceux en moins bon etat. Ecarter archive la piece sans la supprimer.
+              La pile cible d’abord les vêtements peu portés et ceux en moins bon état. Écarter archive la pièce sans la supprimer.
             </div>
             {archivedGarments.length ? (
               <div className="tri-archived-list">

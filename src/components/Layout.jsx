@@ -27,7 +27,7 @@ function Layout({ title, children }) {
       <header className="site-header">
         <div className="container header-inner">
           <div className="site-brand">
-            <div className="site-eyebrow">Organisation dressing</div>
+            <div className="site-eyebrow">Organisation du dressing</div>
             <h1 className="site-title">
               <Link to="/">{title}</Link>
             </h1>
@@ -54,7 +54,7 @@ function Layout({ title, children }) {
                 type="button"
                 onClick={handleLogout}
               >
-                Deconnexion
+                Déconnexion
               </button>
             )}
           </div>

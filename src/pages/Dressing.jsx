@@ -457,7 +457,7 @@ function Dressing() {
     const token = localStorage.getItem('token')
 
     if (!token) {
-      setFormError('Connecte-toi pour ajouter un vetement.')
+      setFormError('Connecte-toi pour ajouter un vêtement.')
       return
     }
 
@@ -511,9 +511,9 @@ function Dressing() {
       setItems((prev) => [garment, ...prev])
       resetCreateForm()
       if (garment.cutoutUrl) {
-        toast.success('Vetement ajoute.')
+        toast.success('Vêtement ajouté.')
       } else {
-        toast.success('Vetement ajoute sans detourage.')
+        toast.success('Vêtement ajouté sans détourage.')
       }
     } catch (err) {
       setFormError(err.message || 'Erreur upload')
@@ -552,7 +552,7 @@ function Dressing() {
       setItems((prev) => prev.map((item) => (item._id === updated._id ? updated : item)))
       setEditingItem(updated)
       setEditForm(mapGarmentToForm(updated))
-      toast.success('Vetement mis a jour.')
+      toast.success('Vêtement mis à jour.')
     } catch (err) {
       setEditError(err.message || 'Erreur modification')
       toast.error(err.message || 'Erreur modification')
@@ -569,7 +569,7 @@ function Dressing() {
       return
     }
 
-    if (!window.confirm(`Supprimer "${editingItem.title || 'ce vetement'}" ?`)) {
+    if (!window.confirm(`Supprimer "${editingItem.title || 'ce vêtement'}" ?`)) {
       return
     }
 
@@ -587,7 +587,7 @@ function Dressing() {
 
       setItems((prev) => prev.filter((item) => item._id !== editingItem._id))
       closeEditor()
-      toast.success('Vetement supprime.')
+      toast.success('Vêtement supprimé.')
     } catch (err) {
       setEditError(err.message || 'Erreur suppression')
       toast.error(err.message || 'Erreur suppression')
@@ -646,7 +646,7 @@ function Dressing() {
       const updated = await res.json()
       applyUpdatedGarment(updated)
       resetEditPhotoState()
-      toast.success(updated.cutoutUrl ? 'Photo remplacee et detouree.' : 'Photo remplacee sans detourage.')
+      toast.success(updated.cutoutUrl ? 'Photo remplacée et détourée.' : 'Photo remplacée sans détourage.')
     } catch (err) {
       setEditError(err.message || 'Erreur remplacement photo')
       toast.error(err.message || 'Erreur remplacement photo')
@@ -672,15 +672,15 @@ function Dressing() {
       })
 
       if (!res.ok) {
-        throw new Error(await readApiError(res, 'Erreur detourage'))
+        throw new Error(await readApiError(res, 'Erreur détourage'))
       }
 
       const updated = await res.json()
       applyUpdatedGarment(updated)
       toast.success('Detourage relance.')
     } catch (err) {
-      setEditError(err.message || 'Erreur detourage')
-      toast.error(err.message || 'Erreur detourage')
+      setEditError(err.message || 'Erreur détourage')
+      toast.error(err.message || 'Erreur détourage')
     } finally {
       setReprocessingId('')
     }
@@ -725,7 +725,7 @@ function Dressing() {
     <>
       <input
         type="text"
-        placeholder="Rechercher un vetement"
+        placeholder="Rechercher un vêtement"
         value={search}
         onChange={(event) => setSearch(event.target.value)}
       />
@@ -768,11 +768,11 @@ function Dressing() {
     <Layout title="Dressing">
       <div className="row" style={{ marginBottom: '10px' }}>
         <a className="chip" href="#add-item">Ajouter</a>
-        <a className="chip" href="#my-items">Mes vetements</a>
+        <a className="chip" href="#my-items">Mes vêtements</a>
       </div>
 
       <div className="panel" id="add-item">
-        <h2>Ajouter un vetement</h2>
+        <h2>Ajouter un vêtement</h2>
 
         <form onSubmit={handleSubmit}>
           <div className="grid cols-2">
@@ -794,7 +794,7 @@ function Dressing() {
                 </div>
 
               <div className="field">
-                <label>Categorie</label>
+                <label>Catégorie</label>
                 <select value={form.category} onChange={(event) => updateFormField('category', event.target.value)}>
                   {categories.map((value) => (
                     <option key={value} value={value}>{value}</option>
@@ -827,7 +827,7 @@ function Dressing() {
               </div>
 
               <div className="field">
-                <label>Etat du vetement</label>
+                <label>état du vêtement</label>
                 <select value={form.condition} onChange={(event) => updateFormField('condition', event.target.value)}>
                   {conditionOptions.map((option) => (
                     <option key={option.value} value={option.value}>{option.label}</option>
@@ -900,7 +900,7 @@ function Dressing() {
               </div>
 
               <div className="field" style={{ gridColumn: '1/-1' }}>
-                <label>Meteo</label>
+                <label>Météo</label>
                 {renderMultiChecks(weatherOptions, form.weatherTags, (value) => {
                   toggleOccasion(value, form.weatherTags, (next) => updateFormField('weatherTags', next))
                 })}
@@ -912,7 +912,7 @@ function Dressing() {
               </div>
 
               <div className="field" style={{ gridColumn: '1/-1' }}>
-                <label>Image du vetement</label>
+                <label>Image du vêtement</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -1044,23 +1044,23 @@ function Dressing() {
         <button className="btn" type="button" onClick={fetchItems} disabled={loading}>
           {loading ? 'Chargement...' : 'Rafraichir'}
         </button>
-        <span className="muted">{items.length} vetement(s)</span>
+        <span className="muted">{items.length} vêtement(s)</span>
         {pageError ? <span className="muted" style={{ color: '#b00020' }}>{pageError}</span> : null}
       </div>
 
       <div className="panel" id="my-items" style={{ marginTop: '12px' }}>
         <div className="section-title">
-          <h2>Mes vetements</h2>
+          <h2>Mes vêtements</h2>
           <div className="muted">{filteredItems.length} visible(s)</div>
         </div>
 
         <div className="stat-kpis" style={{ marginBottom: '10px' }}>
           <div className="kpi">
-            <div className="label">Total vetements</div>
+            <div className="label">Total vêtements</div>
             <div className="big">{items.length}</div>
           </div>
           <div className="kpi">
-            <div className="label">Categories</div>
+            <div className="label">Catégories</div>
             <div className="big">{new Set(items.map((item) => item.category).filter(Boolean)).size}</div>
           </div>
           <div className="kpi">
@@ -1130,7 +1130,7 @@ function Dressing() {
                   Tout reinitialiser
                 </button>
                 <button className="btn" type="button" onClick={() => setShowMobileFilters(false)}>
-                  Voir les vetements
+                  Voir les vêtements
                 </button>
               </div>
             </div>
@@ -1141,7 +1141,7 @@ function Dressing() {
           page={currentPage}
           pageSize={pageSize}
           totalItems={filteredItems.length}
-          label="vetements"
+          label="vêtements"
           showPageSize={false}
           onPageChange={setPage}
           onPageSizeChange={(value) => {
@@ -1151,9 +1151,9 @@ function Dressing() {
         />
 
         {items.length === 0 ? (
-          <div className="muted">Aucun vetement enregistre pour le moment.</div>
+          <div className="muted">Aucun vêtement enregistr? pour le moment.</div>
         ) : filteredItems.length === 0 ? (
-          <div className="muted">Aucun vetement ne correspond aux filtres actuels.</div>
+          <div className="muted">Aucun vêtement ne correspond aux filtres actuels.</div>
         ) : (
           <div className="wardrobe-grid">
             {visibleItems.map((item) => {
@@ -1219,7 +1219,7 @@ function Dressing() {
           page={currentPage}
           pageSize={pageSize}
           totalItems={filteredItems.length}
-          label="vetements"
+          label="vêtements"
           showPageSize={false}
           onPageChange={setPage}
           onPageSizeChange={(value) => {
@@ -1254,7 +1254,7 @@ function Dressing() {
         <div className="modal-backdrop" onClick={closeEditor}>
           <div className="panel modal-card" onClick={(event) => event.stopPropagation()}>
             <div className="section-title">
-              <h2>Modifier le vetement</h2>
+              <h2>Modifier le vêtement</h2>
               <button className="btn small" type="button" onClick={closeEditor}>Fermer</button>
             </div>
 
@@ -1265,7 +1265,7 @@ function Dressing() {
               <div className="adjust-panel">
                 <div className="chips">
                   <span className="chip">{isUsingCutout ? 'Image detouree' : 'Image originale'}</span>
-                  {editingItem.cutoutUrl ? <span className="chip">Detourage disponible</span> : <span className="chip">Pas de detourage</span>}
+                  {editingItem.cutoutUrl ? <span className="chip">Détourage disponible</span> : <span className="chip">Pas de détourage</span>}
                   {editingItem.uploadMeta?.compressedSize ? <span className="chip">Import {Math.round(editingItem.uploadMeta.compressedSize / 1024)} Ko</span> : null}
                 </div>
                 {savedUploadWarnings.length ? (
@@ -1277,13 +1277,13 @@ function Dressing() {
                 ) : null}
                 {editingItem.uploadMeta?.cutoutError ? (
                   <div className="muted" style={{ color: '#b00020' }}>
-                    Dernier echec detourage: {editingItem.uploadMeta.cutoutError}
+                    Dernier échec de détourage : {editingItem.uploadMeta.cutoutError}
                   </div>
                 ) : null}
-                <div className="muted">Si le rendu n'est pas bon, tu peux relancer le detourage depuis l'image originale.</div>
+                <div className="muted">Si le rendu n'est pas bon, tu peux relancer le détourage depuis l'image originale.</div>
                 <div className="row">
                   <button className="btn small" type="button" onClick={handleReprocessCutout} disabled={reprocessingId === editingItem._id}>
-                    {reprocessingId === editingItem._id ? 'Detourage...' : 'Retenter le detourage'}
+                    {reprocessingId === editingItem._id ? 'Détourage...' : 'Retenter le détourage'}
                   </button>
                 </div>
               </div>
@@ -1408,7 +1408,7 @@ function Dressing() {
                 </div>
               ) : (
                 <div className="muted" style={{ marginTop: '6px' }}>
-                  Tu peux choisir une nouvelle photo, la recadrer puis remplacer l'image actuelle du vetement.
+                  Tu peux choisir une nouvelle photo, la recadrer puis remplacer l'image actuelle du vêtement.
                 </div>
               )}
             </div>
@@ -1432,7 +1432,7 @@ function Dressing() {
                   </div>
 
                 <div className="field">
-                  <label>Categorie</label>
+                  <label>Catégorie</label>
                   <select value={editForm.category} onChange={(event) => updateEditField('category', event.target.value)}>
                     {categories.map((value) => (
                       <option key={value} value={value}>{value}</option>
@@ -1465,7 +1465,7 @@ function Dressing() {
                 </div>
 
                 <div className="field">
-                  <label>Etat du vetement</label>
+                  <label>état du vêtement</label>
                   <select value={editForm.condition} onChange={(event) => updateEditField('condition', event.target.value)}>
                     {conditionOptions.map((option) => (
                       <option key={option.value} value={option.value}>{option.label}</option>
@@ -1535,7 +1535,7 @@ function Dressing() {
                 </div>
 
                 <div className="field" style={{ gridColumn: '1/-1' }}>
-                  <label>Meteo</label>
+                  <label>Météo</label>
                   {renderMultiChecks(weatherOptions, editForm.weatherTags, (value) => {
                     toggleOccasion(value, editForm.weatherTags, (next) => updateEditField('weatherTags', next))
                   })}

@@ -10,9 +10,9 @@ const formatPrice = (value) => {
 }
 
 const formatDate = (value) => {
-  if (!value) return 'Non renseignee'
+  if (!value) return 'Non renseignée'
   const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return 'Non renseignee'
+  if (Number.isNaN(date.getTime())) return 'Non renseignée'
   return date.toLocaleDateString()
 }
 
@@ -58,7 +58,7 @@ function VetementDetail() {
 
         for (const response of [garmentsRes, outfitsRes, currentPlansRes, previousPlansRes]) {
           if (!response.ok) {
-            throw new Error(await readApiError(response, 'Erreur chargement fiche vetement'))
+            throw new Error(await readApiError(response, 'Erreur chargement fiche vêtement'))
           }
         }
 
@@ -72,7 +72,7 @@ function VetementDetail() {
         setOutfits(Array.isArray(outfitsData) ? outfitsData : [])
         setPlans([...(Array.isArray(currentPlans) ? currentPlans : []), ...(Array.isArray(previousPlans) ? previousPlans : [])])
       } catch (err) {
-        setError(err.message || 'Erreur chargement fiche vetement')
+        setError(err.message || 'Erreur chargement fiche vêtement')
       } finally {
         setLoading(false)
       }
@@ -115,7 +115,7 @@ function VetementDetail() {
   const imageSrc = garment ? buildAssetUrl(garment.imageUrl || garment.cutoutUrl || garment.originalUrl) : ''
 
   return (
-    <Layout title={garment?.title || 'Fiche vetement'}>
+    <Layout title={garment?.title || 'Fiche vêtement'}>
       <div className="row" style={{ marginBottom: '10px' }}>
         <button className="btn small ghost" type="button" onClick={() => navigate('/dressing')}>
           Retour dressing
@@ -125,7 +125,7 @@ function VetementDetail() {
 
       {loading ? <div className="muted">Chargement...</div> : null}
       {error ? <div className="muted" style={{ color: '#b00020' }}>{error}</div> : null}
-      {!loading && !error && !garment ? <div className="muted">Vetement introuvable.</div> : null}
+      {!loading && !error && !garment ? <div className="muted">Vêtement introuvable.</div> : null}
 
       {garment ? (
         <>
@@ -139,7 +139,7 @@ function VetementDetail() {
             <div className="panel">
               <div className="section-title">
                 <h2>{garment.title || 'Sans nom'}</h2>
-                <span className="chip">{garment.category || 'Categorie inconnue'}</span>
+                <span className="chip">{garment.category || 'Catégorie inconnue'}</span>
               </div>
               <div className="chips" style={{ marginBottom: '10px' }}>
                 {garment.color ? <span className="chip">{garment.color}</span> : null}
@@ -169,9 +169,9 @@ function VetementDetail() {
               <div className="meta-list" style={{ marginTop: '12px' }}>
                 <div className="muted">Achete le: {formatDate(garment.purchaseDate)}</div>
                 <div className="muted">Lieu: {garment.purchaseLocation || 'Non renseigne'}</div>
-                <div className="muted">Origine: {garment.origin || 'Non renseignee'}</div>
-                <div className="muted">Taille: {garment.size || 'Non renseignee'}</div>
-                <div className="muted">Matiere: {garment.material || 'Non renseignee'}</div>
+                <div className="muted">Origine: {garment.origin || 'Non renseignée'}</div>
+                <div className="muted">Taille: {garment.size || 'Non renseignée'}</div>
+                <div className="muted">Matière: {garment.material || 'Non renseignée'}</div>
                 {garment.notes ? <div className="muted">Notes: {garment.notes}</div> : null}
               </div>
             </div>
@@ -196,7 +196,7 @@ function VetementDetail() {
                   ))}
                 </div>
               ) : (
-                <div className="muted">Aucun port date n'a encore ete retrouve dans le calendrier.</div>
+                <div className="muted">Aucun port dat? n'a encore ?t? retrouv? dans le calendrier.</div>
               )}
             </div>
 
@@ -218,7 +218,7 @@ function VetementDetail() {
                   ))}
                 </div>
               ) : (
-                <div className="muted">Ce vetement n'est encore utilise dans aucune tenue enregistree.</div>
+                <div className="muted">Ce vêtement n'est encore utilisé dans aucune tenue enregistrée.</div>
               )}
             </div>
           </div>

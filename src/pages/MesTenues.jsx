@@ -19,9 +19,9 @@ const outfitStatusLabels = {
 }
 
 const formatDate = (value) => {
-  if (!value) return 'Jamais portee'
+  if (!value) return 'Jamais portée'
   const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return 'Jamais portee'
+  if (Number.isNaN(date.getTime())) return 'Jamais portée'
   return date.toLocaleDateString()
 }
 
@@ -91,7 +91,7 @@ function MesTenues() {
       }
 
       setOutfits((prev) => prev.filter((entry) => entry._id !== outfit._id))
-      toast.success('Tenue supprimee.')
+      toast.success('Tenue supprimée.')
     } catch (err) {
       setError(err.message || 'Erreur suppression tenue')
       toast.error(err.message || 'Erreur suppression tenue')
@@ -121,7 +121,7 @@ function MesTenues() {
       })
 
       if (!res.ok) {
-        throw new Error(await readApiError(res, 'Erreur mise a jour tenue'))
+        throw new Error(await readApiError(res, 'Erreur mise à jour tenue'))
       }
 
       const data = await res.json()
@@ -134,10 +134,10 @@ function MesTenues() {
             }
           : entry
       )))
-      toast.success(`${data.updatedGarments || 0} vetement(s) mis a jour.`)
+      toast.success(`${data.updatedGarments || 0} vêtement(s) mis à jour.`)
     } catch (err) {
-      setError(err.message || 'Erreur mise a jour tenue')
-      toast.error(err.message || 'Erreur mise a jour tenue')
+      setError(err.message || 'Erreur mise à jour tenue')
+      toast.error(err.message || 'Erreur mise à jour tenue')
     } finally {
       setWearingId('')
     }
@@ -160,22 +160,22 @@ function MesTenues() {
       })
 
       if (!res.ok) {
-        throw new Error(await readApiError(res, 'Erreur mise a jour tenue'))
+        throw new Error(await readApiError(res, 'Erreur mise à jour tenue'))
       }
 
       const saved = await res.json()
       setOutfits((prev) => prev.map((entry) => (entry._id === saved._id ? saved : entry)))
 
       if (Object.prototype.hasOwnProperty.call(updates, 'isFavorite')) {
-        toast.success(updates.isFavorite ? 'Tenue ajoutee aux favoris.' : 'Tenue retiree des favoris.')
+        toast.success(updates.isFavorite ? 'Tenue ajoutée aux favoris.' : 'Tenue retirée des favoris.')
       } else if (Object.prototype.hasOwnProperty.call(updates, 'isPublic')) {
-        toast.success(updates.isPublic ? 'Tenue rendue publique dans le lookbook.' : 'Tenue rendue privee.')
+        toast.success(updates.isPublic ? 'Tenue rendue publique dans le lookbook.' : 'Tenue rendue privée.')
       } else if (updates.status) {
-        toast.success(`Tenue marquee ${outfitStatusLabels[updates.status]?.toLowerCase() || 'mise a jour'}.`)
+        toast.success(`Tenue marquee ${outfitStatusLabels[updates.status]?.toLowerCase() || 'mise à jour'}.`)
       }
     } catch (err) {
-      setError(err.message || 'Erreur mise a jour tenue')
-      toast.error(err.message || 'Erreur mise a jour tenue')
+      setError(err.message || 'Erreur mise à jour tenue')
+      toast.error(err.message || 'Erreur mise à jour tenue')
     } finally {
       setUpdatingId('')
     }
@@ -279,7 +279,7 @@ function MesTenues() {
       </select>
       <select value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
         <option value="recent">Plus recentes</option>
-        <option value="wears">Les plus portees</option>
+        <option value="wears">Les plus portées</option>
         <option value="last-worn">Dernier port</option>
         <option value="name">Nom A-Z</option>
         <option value="pieces">Plus de pieces</option>
@@ -302,13 +302,13 @@ function MesTenues() {
     <Layout title="Mes tenues">
       <div className="panel">
         <div className="section-title">
-          <h2>Mes tenues enregistrees</h2>
+          <h2>Mes tenues enregistrées</h2>
           <div className="muted">{loading ? 'Chargement...' : `${outfits.length} tenue(s)`}</div>
         </div>
 
         <div className="stat-kpis" style={{ marginBottom: '10px' }}>
           <div className="kpi">
-            <div className="label">Tenues enregistrees</div>
+            <div className="label">Tenues enregistrées</div>
             <div className="big">{loading ? '...' : outfits.length}</div>
           </div>
           <div className="kpi">
@@ -328,9 +328,9 @@ function MesTenues() {
             <div className="big">{loading ? '...' : totalPieces}</div>
           </div>
           <div className="kpi">
-            <div className="label">Plus portee</div>
+            <div className="label">Plus portée</div>
             <div className="big">{loading ? '...' : Number(topWornOutfit?.wearCount || 0)}</div>
-            <div className="muted">{topWornOutfit?.name || 'Aucune tenue portee'}</div>
+            <div className="muted">{topWornOutfit?.name || 'Aucune tenue portée'}</div>
           </div>
         </div>
 
@@ -375,7 +375,7 @@ function MesTenues() {
 
         {error ? <div className="muted" style={{ color: '#b00020' }}>{error}</div> : null}
         {!loading && !outfits.length ? (
-          <div className="muted">Aucune tenue sauvegardee pour le moment. Cree-en une depuis l'onglet Tenues.</div>
+          <div className="muted">Aucune tenue sauvegardée pour le moment. Crée-en une depuis l'onglet Tenues.</div>
         ) : !loading && !visibleOutfits.length ? (
           <div className="muted">Aucune tenue ne correspond a tes filtres.</div>
         ) : (
@@ -453,7 +453,7 @@ function MesTenues() {
                       onClick={() => handleWear(outfit)}
                       disabled={wearingId === outfit._id || deletingId === outfit._id}
                     >
-                      {wearingId === outfit._id ? 'Mise a jour...' : "Porter aujourd'hui"}
+                      {wearingId === outfit._id ? 'Mise ? jour...' : "Porter aujourd'hui"}
                     </button>
                   </div>
                   <div className="row outfit-card-actions">
